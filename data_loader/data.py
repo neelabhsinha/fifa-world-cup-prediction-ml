@@ -17,8 +17,8 @@ from sklearn.feature_selection import RFE
 #from sklearn.naive_bayes import GaussianNB
 import warnings
 warnings.filterwarnings("ignore")
-
-class FeatureSelection:
+#UNDER CONSTRUCTION
+class DataSetSelection:
     def __init__(self):
         #Master dataset should be read here
         #TODO : Paste all of the data reading code from the notebooks and test. Block - by - block ( Cell 10-13)
@@ -29,9 +29,10 @@ class FeatureSelection:
 
 
     def features_binary(self,teamA,teamB,date,timeWindow = 2):
-        """ Returns team attributes 
+        """ UNDER CONSTRUCTION
+          Returns team attributes for a match
         You may use this if you want . This returns all of the original features appended. Supervised learners may wanna use
-        features_final_supervised for their learning set. I assume the tournament folks would need it during simulation.
+        supervised_dataset_final for their learning set. I assume the tournament folks would need it during simulation.
         
         args :
                 teamA : string that is either the Full Name of the first team or the FIFA abbreviation
@@ -47,7 +48,8 @@ class FeatureSelection:
         raise "NotImplementedError"
         return features_binary
     def supervised_dataset_final(self,dimred_method = "None"):
-        """This is the final reduced dataset we will work with.
+        """ UNDER CONSTRUCTION
+        This is the final reduced dataset we will work with.
         args:
             dimrec_medthod = Method for dimension reduction 
                                 'PCA' for PCA
