@@ -48,6 +48,8 @@ class DataSetSelection:
                 [team_A_unary_attributes|team_B_unary_attributes|team_AvB_data] or PCAd sphagetti            
         """
         features_binary = []
+        # Faster actually since you just need to two slices
+        #SLICE N1 :
 
         #TODO: Copy Notebook Code (Cell 17-20) in a sane manner
         #raise "NotImplementedError"
