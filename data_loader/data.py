@@ -276,6 +276,7 @@ class DataSetGeneration:  # This generated the original Data. Use this if you ne
     def generate_unary_team_histoy(self,team_stats,n_historic_window,n_games):
         stats_val = []
         for index, row in tqdm(team_stats.iterrows()):
+            # 1.5 minutes runtime
             team = row["team"]
             date = row["date"]
             past_games = team_stats.loc[(team_stats["team"] == team) & (team_stats["date"] < date) & (team_stats['date'] > date- n_historic_window*pd.Timedelta(days=365) )].sort_values(by=['date'], ascending=False)
@@ -358,6 +359,7 @@ class DataSetGeneration:  # This generated the original Data. Use this if you ne
         n_historic_window_f2f = 5 #5 years
         #n_games = 5 #Number of games to consider
         for index, row in tqdm(detailed_historical_matches_ranked.iterrows()):
+            #1.5 minutes runtime
             teamA = row["home_team"]
             teamB = row["away_team"]
             date = row["date"]
