@@ -1,58 +1,200 @@
 # This is the feature selector file .
+#TODO : Delete unnecessary commented code.
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np 
 import pandas as pd 
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-#from sklearn.feature_selection import SelectFromModel
-#from sklearn.model_selection import train_test_split
-#from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import RFE
-#from sklearn.metrics import accuracy_score
-#from sklearn.ensemble import GradientBoostingClassifier
-#from xgboost import XGBClassifier
-#from sklearn.tree import DecisionTreeClassifier
-#from sklearn.svm import SVC
-#from sklearn.naive_bayes import GaussianNB
+
 import warnings
 warnings.filterwarnings("ignore")
+#   DataSetSelection is meant for your use .It works on generated csvs
+# DataSetGeneration generates a fresh dataset for your work. Use it iff you wanna see the effects of changing hyperparameters.
+# ArgParser is not planned yet to combine the two classes . Maybe at the end .
+# Next is putting the feature selector in DataSetSelection to allow you the ability to set correlation thresholds.
+# Parallely the new class to be added. On it .
 #UNDER CONSTRUCTION
-class DataSetSelection:
+class DataSetSelection:  #Use this for your classifiers!
     def __init__(self):
         #Master dataset should be read here . It never changes. It is the csv with all features before truncation.
         #TODO : Paste all of the data reading code from the notebooks and test. Block - by - block ( Cell 10-13)
         # I am not sure if pandas dataset is passed
-        #features_chosen_after_analysis = []
-        #features_chosen_by_hand = []
         self.pca = False
         self.lda=False
         self.corr = False
         self.featurelist = []
-        #self.daBigSet = pd.read_csv
+        self.dataset = pd.read_csv('data_loader/master_dataset.csv')
+        self.fifarankdataset = pd.read_csv("data_loader/kaggle/input/fifa_ranking-2023-07-20.csv")
+        self.masterdataset = 0
         #TODO : Check this
 
 
-    def features_binary(self,teamA,teamB,date,timeWindow = 2):
+    def features_binary(self,teamA,teamB,date):
         """ UNDER CONSTRUCTION
-          Returns team attributes for a match
+          Returns team attributes for a match(Complete set of features right now .)
         You may use this if you want . This returns all of the original features appended. Supervised learners may wanna use
         supervised_dataset_final for their learning set. I assume the tournament folks would need it during simulation.
         This might take a long time to run. Absolutely don't do it at every match node .
         args :
-                teamA : string that is either the Full Name of the first team or the FIFA abbreviation
-                teamB:  string that is either the Full Name of the second team or the FIFA abbreviation
+                teamA : string that is  the Full Name of the first team 
+                teamB:  string that is  the Full Name of the second team 
                 date: DateTime format "YYYY-MM-DD" when you intend to face them off .
                 timeWindow : (Not implemented yet . How far do you want to compare their strengths)
         returns :
                 [team_A_unary_attributes|team_B_unary_attributes|team_AvB_data] or PCAd sphagetti            
         """
+        # I have verified this data with explicit hand tracing with two random football teams over a period of time for various teams.
+        # however in case I missed please let me know ASAP. If you find data which is not historically true ,that means the data is wrong in the master dataset as well. 
+        fifa_rank = self.fifarankdataset  # This is unavoidable. We need to know the ranks of the two teams on the date
+        fifa_rank["rank_date"] = pd.to_datetime(fifa_rank["rank_date"]) #Fifa rank 
+        fifa_rank["country_full"] = fifa_rank["country_full"].str.replace("IR Iran", "Iran").str.replace("Korea Republic", "South Korea").str.replace("USA", "United States")
+        fifa_rank = fifa_rank.set_index(['rank_date']).groupby(['country_full'], group_keys=False).resample('D').first().fillna(method='ffill').reset_index()
         features_binary = []
+        n_games= 5 # 5 games 
+        n_historic_window = 5 #5 years # TODO: This needs to be hardcoded in some way.
         # Faster actually since you just need to two slices
+        masterdataset = self.dataset
         #SLICE N1 :
+        teams = [teamA,teamB]
+        fifarankdate = fifa_rank[fifa_rank['rank_date']== date]
+        rankA = fifarankdate[fifarankdate["country_full"] == teamA]
+        rankA = rankA.iloc[0]["rank"]
+        rankB = fifarankdate[fifarankdate["country_full"] == teamB]
+        rankB = rankB.iloc[0]["rank"]
+        del_rank = rankA - rankB
+        stats_val = []
+        stats_val0 = [del_rank]
+        masterdataset["date"] = pd.to_datetime(masterdataset["date"])
+        masterdataset = masterdataset[(masterdataset["date"] < date)].reset_index(drop=True) #Always filter by date first.
+        date = pd.to_datetime(date)
+        for team in teams:
+            team_history =  masterdataset.loc[ (masterdataset["date"] >= date-n_historic_window*pd.Timedelta(days=365)) & ((masterdataset["home_team"] == team) | (masterdataset["away_team"] == team))].sort_values(by=['date'], ascending=False) #Always filter by date first.
+            team_history=team_history.drop(["index"],axis=1)
+            team_history = team_history.reset_index(drop=True)
+            lastn = team_history.head(n_games)
+            lastn = lastn.reset_index(drop=True)
+            n_l = 0
+            goals = 0
+            goals_ln=0
+            goals_suf = 0
+            goals_suff_ln = 0
+            rank_ln = 0
+            gp_ln = 0
+            gp = 0
+            rank = 0
+            n_l = lastn.shape[0]
+            if n_l!=0:
+                for i in range(n_l):  #I don't like pandas and don't want to.Accessing a cell is harder than anything
+                    if lastn.iloc[i]["home_team"] == team:
+                        goals_ln = goals_ln+lastn.iloc[i]["home_score"]
+                        goals_suff_ln = goals_suff_ln+lastn.iloc[i]["away_score"]
+                        gp_ln += lastn.iloc[i]["total_points_home"]
+                        rank_ln += lastn.iloc[i]["rank_away"]
+                    else:
+                        goals_ln = goals_ln+lastn.iloc[i]["away_score"]
+                        goals_suff_ln = goals_suff_ln+lastn.iloc[i]["home_score"]
+                        gp_ln += lastn.iloc[i]["total_points_away"]
+                        rank_ln += lastn.iloc[i]["rank_home"]
 
-        #TODO: Copy Notebook Code (Cell 17-20) in a sane manner
-        #raise "NotImplementedError"
+           
+            if n_l ==0:
+                #total_points_home 
+                goals_ln = 0
+                gp_ln = 0
+                rank_ln = 0
+                goals_suff_ln = 0
+            else:
+                goals_ln = goals_ln/n_l
+                goals_suff_ln  = goals_suff_ln/n_l
+                gp_ln = gp_ln/n_l
+                rank_ln = rank_ln/n_l   
+            if len(lastn) == 0:
+                points_ln = 0
+            else :
+                t0 = lastn.head(1)
+                
+                z = t0[t0["home_team"] == team]
+                if len(z) !=0 :
+                    point_t0 = t0.iloc[0]["total_points_home"]
+                else:
+                    point_t0 = t0.iloc[0]["total_points_away"]
+                tn = lastn.tail(1)
+                z = tn[tn["home_team"] == team]
+                if len(z)!=0 :
+                    point_tn = tn.iloc[0]["total_points_home"]
+                else:
+                    point_tn = tn.iloc[0]["total_points_away"]             
+                points_ln = point_tn - point_t0
+            t0 = team_history.head(1)
+            z = t0[t0["home_team"] == team]
+            if len(z)!=0 :
+                point_t0 = t0.iloc[0]["total_points_home"]
+            else:
+                point_t0 = t0.iloc[0]["total_points_away"]
+            tn = team_history.tail(1)
+            z = tn[tn["home_team"] == team]
+            if  len(z)!=0:
+                point_tn = tn.iloc[0]["total_points_home"]
+            else:
+                point_tn = tn.iloc[0]["total_points_away"]             
+            points = point_tn - point_t0
+            team_history_as_home =  masterdataset.loc[ (masterdataset["date"] >= date-n_historic_window*pd.Timedelta(days=365)) & ((masterdataset["home_team"] == team) )].sort_values(by=['date'], ascending=False)
+            team_history_as_home=team_history_as_home.drop(["index"],axis=1)
+            team_history_as_home = team_history_as_home.reset_index(drop=True)
+            n_H = team_history_as_home.shape[0]
+            goals = goals + team_history_as_home["home_score"].sum() 
+            goals_suf = goals_suf + team_history_as_home["away_score"].sum()
+            gp = gp+team_history_as_home["total_points_home"].sum()
+            team_history_as_away =  masterdataset.loc[ (masterdataset["date"] >= date-n_historic_window*pd.Timedelta(days=365)) & ((masterdataset["away_team"] == team) )].sort_values(by=['date'], ascending=False)
+            team_history_as_away=team_history_as_away.drop(["index"],axis=1)
+            team_history_as_away = team_history_as_away.reset_index(drop=True)
+            n_A = team_history_as_away.shape[0]
+            goals = goals + team_history_as_away["away_score"].sum() 
+            goals_suf = goals_suf + team_history_as_away["home_score"].sum()
+            gp = gp+team_history_as_away["total_points_away"].sum()
+            if (n_A+n_H)!=0:
+                goals = goals/(n_A+n_H)
+                goals_suf = goals_suf/(n_A+n_H)
+                gp = gp/(n_A+n_H)
+                rank = rank/(n_A+n_H)
+            stats_val.append([goals, goals_ln, goals_suf, goals_suff_ln, rank, rank_ln,points,points_ln,gp,gp_ln])
+        stats_val = stats_val[0]+stats_val[1]
+        stats_val = stats_val0+stats_val
+        n_historic_window_f2f = 5
+        past_games_AvB = masterdataset[(masterdataset['home_team'] == teamA)&((masterdataset['away_team'] == teamB)) & (masterdataset["date"] < date) & (masterdataset['date'] > date- n_historic_window_f2f*pd.Timedelta(days=365) )].sort_values(by=['date'], ascending=False)
+        n_AvB = past_games_AvB.shape[0]
+        goals_by_A = 0
+        goals_by_B = 0
+        won_by_A =0 
+        won_by_B = 0
+        tied_AvB = 0
+        goals_by_A = past_games_AvB["home_score"].sum() + goals_by_A
+        goals_by_B = past_games_AvB["away_score"].sum() +goals_by_B
+        won_by_A = past_games_AvB["Target_Outcome_Win"].sum() +won_by_A
+        won_by_B = past_games_AvB["Target_Outcome_Loss"].sum() + won_by_B
+        tied_AvB = past_games_AvB["Target_Outcome_Tie"].sum() +tied_AvB
+        past_games_BvA =masterdataset[(masterdataset['home_team'] == teamB)&((masterdataset['away_team'] == teamA)) & (masterdataset["date"] < date) & (masterdataset['date'] > date- n_historic_window_f2f*pd.Timedelta(days=365) )].sort_values(by=['date'], ascending=False)
+        n_BvA = past_games_BvA.shape[0]
+        goals_by_A = past_games_BvA["away_score"].sum() + goals_by_A
+        goals_by_B = past_games_BvA["home_score"].sum() +goals_by_B
+        won_by_A = past_games_BvA["Target_Outcome_Loss"].sum() +won_by_A
+        won_by_B = past_games_BvA["Target_Outcome_Win"].sum() + won_by_B
+        tied_AvB = past_games_BvA["Target_Outcome_Tie"].sum() +tied_AvB
+        if (n_AvB + n_BvA)!=0:
+            goals_by_A = goals_by_A/(n_AvB+n_BvA)
+            goals_by_B = goals_by_B/(n_AvB+n_BvA)
+        stats_val = stats_val + [goals_by_A,goals_by_B,won_by_A,won_by_B,tied_AvB]
+        stats_cols= ['del_rank','home_goals_mean','home_goals_mean_ln','home_goals_suf_mean','home_goals_suf_mean_ln', 'home_rank_mean',
+       'home_rank_mean_ln', 'home_points', 'home_points_ln',
+       'home_game_points_mean', 'home_game_points_mean_ln', 
+       'away_goals_mean', 'away_goals_mean_ln', 'away_goals_suf_mean',
+       'away_goals_suf_mean_ln', 'away_rank_mean', 'away_rank_mean_ln',
+       'away_points', 'away_points_ln', 'away_game_points_mean',
+       'away_game_points_mean_ln', 'goals_AvB_past', 'goals_BvA_past',"A_victories","B_victories","Team_ties"]
+        features_binary =  pd.DataFrame([stats_val], columns=stats_cols)
+        #return 0
         return features_binary
     def supervised_dataset_final(self,dimred_method = "Corr",date_start ='2000-01-01',date_end = '2023-01-01'):
         """ UNDER CONSTRUCTION
@@ -81,6 +223,8 @@ class DataSetSelection:
             self.lda=False
             self.corr = False
             masterdataset=pd.read_csv('data_loader/master_dataset.csv')
+            masterdataset["date"] = pd.to_datetime(masterdataset["date"])
+            self.masterdataset = masterdataset
             masterdataset = masterdataset[(masterdataset["date"] >= date_start) & (masterdataset["date"] < date_end)].reset_index(drop=True) #Always filter by date first.
             featureset = [ "del_rank",'home_goals_mean','home_goals_mean_ln','home_goals_suf_mean','home_goals_suf_mean_ln', 'home_rank_mean',
             'home_rank_mean_ln', 'home_points', 'home_points_ln',
@@ -124,4 +268,8 @@ class DataSetSelection:
         """ UNDER CONSTRUCTION"""
         print("sorry under construction!")
         return 0
-
+class DataSetGeneration:  # This generated the original Data. Use this if you need to perform hyperparameter tuning.
+    def __init__(self) -> None:
+        pass
+    # TODO: Dump Jupyter Code here.    
+        
