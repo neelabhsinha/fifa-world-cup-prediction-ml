@@ -5,6 +5,7 @@ data_dir_path = '/Users/neelabh/Desktop/Work/Projects/CS 7641 ML/data'
 source_dir = 'source'
 
 features_keys = [
+    'home_win_count_home', 'home_win_count_away', 'away_win_count_home', 'away_win_count_away',
     'home_team_mean_goals_scored_at_home', 'home_team_mean_goals_conceded_at_home', 'home_team_std_goals_scored_at_home',
     'home_team_std_goals_conceded_at_home', 'home_team_mean_goals_scored_away', 'home_team_mean_goals_conceded_away',
     'home_team_std_goals_scored_away', 'home_team_std_goals_conceded_away', 'away_team_mean_goals_scored_at_home',

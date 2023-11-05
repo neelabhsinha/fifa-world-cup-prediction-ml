@@ -43,11 +43,17 @@ class FeatureGenerator:
             away_team, home_team, match_date)
         home_rank, home_rank_change = self._get_closest_ranking_for_team(home_team, match_date)
         away_rank, away_rank_change = self._get_closest_ranking_for_team(away_team, match_date)
+        home_win_count_home = self._get_home_win_count(home_team, match_date)
+        home_win_count_away = self._get_away_win_count(home_team, match_date)
+        away_win_count_home = self._get_home_win_count(away_team, match_date)
+        away_win_count_away = self._get_away_win_count(away_team, match_date)
+        h2h_home_win_count, h2h_away_win_count = self._get_head_to_head_win_count(home_team, away_team, match_date)
         if neutral:
             home_match_for_home_team = 0
         else:
             home_match_for_home_team = 1
-        features_list = [home_mean_goals_scored_home, home_mean_goals_conceded_home, home_std_goals_scored_home,
+        features_list = [home_win_count_home, home_win_count_away, away_win_count_home, away_win_count_away,
+                         home_mean_goals_scored_home, home_mean_goals_conceded_home, home_std_goals_scored_home,
                          home_std_goals_conceded_home,
                          home_mean_goals_scored_away, home_mean_goals_conceded_away, home_std_goals_scored_away,
                          home_std_goals_conceded_away,
@@ -117,3 +123,28 @@ class FeatureGenerator:
         closest_rank_date = team_df['rank_date'].max()
         closest_rank_row = team_df[team_df['rank_date'] == closest_rank_date].iloc[0]
         return closest_rank_row['rank'], closest_rank_row['rank_change']
+
+    def _get_home_win_count(self, team, date_of_new_match):
+        matches_before_date = self._match_results_df[
+            (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
+            (self._match_results_df['home_team'] == team)
+            ]
+        home_wins = matches_before_date[matches_before_date['home_score'] > matches_before_date['away_score']].shape[0]
+        return home_wins
+
+    def _get_away_win_count(self, team, date_of_new_match):
+        matches_before_date = self._match_results_df[
+            (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
+            (self._match_results_df['away_team'] == team)
+            ]
+        away_wins = matches_before_date[matches_before_date['away_score'] > matches_before_date['home_score']].shape[0]
+        return away_wins
+
+    def _get_head_to_head_win_count(self, home_team, away_team, date_of_new_match):
+        matches_before_date = self._match_results_df[
+            (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
+            ((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team))
+            ]
+        home_team_wins = matches_before_date[matches_before_date['home_score'] > matches_before_date['away_score']].shape[0]
+        away_team_wins = matches_before_date[matches_before_date['home_score'] < matches_before_date['away_score']].shape[0]
+        return home_team_wins, away_team_wins
