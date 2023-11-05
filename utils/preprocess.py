@@ -1,5 +1,7 @@
 import numpy as np
-
+from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
+from sklearn.preprocessing import OneHotEncoder
 #Don't know why this is here. I am leaving it as is.
 class CrossEntropyLoss:
     def __init__(self):
@@ -26,3 +28,4 @@ class CrossEntropyLoss:
 #Maintain consistency  logistic_regression -> (preprocess-> train -> test (eval) ) .Things in brackets should happen consistently.(Why not one file?)
 #  
 # 
+
