@@ -223,11 +223,12 @@ class DataSetSelection:  #Use this for your classifiers!
             self.pca = False
             self.lda=False
             self.corr = False
-            masterdataset=pd.read_csv('data_loader/master_dataset.csv')
+            masterdataset=pd.read_csv('data_loader/master_dataset_automated.csv')
             masterdataset["date"] = pd.to_datetime(masterdataset["date"])
+            masterdataset["del_rank"] = masterdataset["rank_home"] - masterdataset["rank_away"]
             self.masterdataset = masterdataset
             masterdataset = masterdataset[(masterdataset["date"] >= date_start) & (masterdataset["date"] < date_end)].reset_index(drop=True) #Always filter by date first.
-            featureset = [ "del_rank",'home_goals_mean','home_goals_mean_ln','home_goals_suf_mean','home_goals_suf_mean_ln', 'home_rank_mean',
+            featureset = ["neutral","tournament","rank_home","rank_away", "del_rank",'home_goals_mean','home_goals_mean_ln','home_goals_suf_mean','home_goals_suf_mean_ln', 'home_rank_mean',
             'home_rank_mean_ln', 'home_points', 'home_points_ln',
             'home_game_points_mean', 'home_game_points_mean_ln', 
             'away_goals_mean', 'away_goals_mean_ln', 'away_goals_suf_mean',
@@ -242,11 +243,12 @@ class DataSetSelection:  #Use this for your classifiers!
             self.pca = False
             self.lda=False
             self.corr = True   
-            masterdataset=pd.read_csv("data_loader/CorrCorrectedData.csv")
+            masterdataset=pd.read_csv("data_loader/master_dataset_automated.csv")
             masterdataset["date"] = pd.to_datetime(masterdataset["date"]) 
+            masterdataset["del_rank"] = masterdataset["rank_home"] - masterdataset["rank_away"]
             masterdataset = masterdataset[(masterdataset["date"] >= date_start) & (masterdataset["date"] < date_end)].reset_index(drop=True) #Always filter by date first.
             targetset = ["Target_Outcome_Win","Target_Outcome_Loss","Target_Outcome_Tie"]
-            featureset = ["del_rank",'home_goals_mean','home_goals_mean_ln','home_goals_suf_mean', 
+            featureset = ["tournament","rank_home","rank_away","del_rank",'home_goals_mean','home_goals_mean_ln','home_goals_suf_mean', 
             'away_goals_mean', 'away_goals_mean_ln', 'away_goals_suf_mean','goals_AvB_past', 'goals_BvA_past',
             'A_victories', 'B_victories']
             self.featurelist = featureset
@@ -335,6 +337,7 @@ class DataSetGeneration:  # This generated the original Data. Use this if you ne
         historic_matches_ranked['Target_Outcome_Win'] = historic_matches_ranked.apply(lambda row : 1 if (row.GoalDifference > 0) else 0 ,axis=1)
         historic_matches_ranked['Target_Outcome_Loss'] = historic_matches_ranked.apply(lambda row : 1 if (row.GoalDifference < 0) else 0 ,axis=1)
         historic_matches_ranked['Target_Outcome_Tie'] = historic_matches_ranked.apply(lambda row : 1 if (row.GoalDifference == 0) else 0 ,axis=1)
+        historic_matches_ranked["del_rank"] = historic_matches_ranked["rank_home"] - historic_matches_ranked["rank_away"]
         #Team wise stats calculator
         #Add new features derived from historical match data
         # Goals taken and scored against in the last n matches (?)
