@@ -1,6 +1,7 @@
 import os.path as osp
 import pandas as pd
 import numpy as np
+import multiprocessing as mp
 
 from const import data_dir_path, source_dir, features_keys, label_keys
 
@@ -18,10 +19,25 @@ class FeatureGenerator:
         self._individual_window_size = individual_window_size
         self._head_to_head_window_size = head_to_head_window_size
 
-    def __call__(self, matches_df):
-        features_labels_df = matches_df.apply(self._process_row, axis=1)
+    def __call__(self, matches_df, multiprocessing=True):
+        if multiprocessing:
+            cpu_cores = mp.cpu_count()
+            print('Running feature generation on {} cores'.format(cpu_cores))
+            matches_df_split = np.array_split(matches_df, cpu_cores)
+            thread_pool = mp.Pool(cpu_cores)
+            feature_chunks = thread_pool.map(self._process_rows_parallel, matches_df_split)
+            thread_pool.close()
+            thread_pool.join()
+            features_labels_df = pd.concat(feature_chunks, ignore_index=True)
+        else:
+            print('Running feature generation on 1 core')
+            features_labels_df = matches_df.apply(self._process_row, axis=1)
         features_labels_df.columns = features_keys + label_keys
+        print('Feature generation complete')
         return features_labels_df
+
+    def _process_rows_parallel(self, matches_df_chunk):
+        return matches_df_chunk.apply(self._process_row, axis=1)
 
     def _process_row(self, row):
         home_team, away_team, match_date, match_type = row['home_team'], row['away_team'], row['date'], row[
@@ -158,8 +174,14 @@ class FeatureGenerator:
             (((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team)) |
              ((self._match_results_df['home_team'] == away_team) & (self._match_results_df['away_team'] == home_team)))
             ].tail(self._head_to_head_window_size)
-        home_team_wins = (matches_before_date[(matches_before_date['home_team'] == home_team) & (matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (matches_before_date[(matches_before_date['away_team'] == home_team) & (matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
-        away_team_wins = (matches_before_date[(matches_before_date['home_team'] == away_team) & (matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (matches_before_date[(matches_before_date['away_team'] == away_team) & (matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
+        home_team_wins = (matches_before_date[(matches_before_date['home_team'] == home_team) & (
+                    matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
+                         matches_before_date[(matches_before_date['away_team'] == home_team) & (
+                                     matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
+        away_team_wins = (matches_before_date[(matches_before_date['home_team'] == away_team) & (
+                    matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
+                         matches_before_date[(matches_before_date['away_team'] == away_team) & (
+                                     matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
         return home_team_wins, away_team_wins
 
     def _get_match_type(self, match_type):
