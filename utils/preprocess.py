@@ -1,19 +1,15 @@
-import numpy as np
+from const import data_dir_path, source_dir, individual_window_size, head_to_head_window_size, last_n_data
+
+import pandas as pd
+import os.path as osp
+
+from data_loader.feature_generator import FeatureGenerator
 
 
-class CrossEntropyLoss:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def calculate(predictions, targets):
-        assert predictions.shape == targets.shape, "Shape mismatch between predictions and targets"
-
-        # Avoid numerical instability by adding a small epsilon value to predictions
-        epsilon = 1e-15
-        predictions = np.clip(predictions, epsilon, 1 - epsilon)
-
-        # Calculate the cross-entropy loss
-        loss = -np.sum(targets * np.log(predictions)) / len(predictions)
-
-        return loss
+def generate_features():
+    match_results_file = osp.join(data_dir_path, source_dir, 'match_results.csv')
+    match_results_df = pd.read_csv(match_results_file)
+    feature_generator = FeatureGenerator(individual_window_size, head_to_head_window_size)
+    features = feature_generator(match_results_df[-last_n_data:])
+    features.to_csv(osp.join(data_dir_path, 'features_last_' + str(last_n_data) + '_windows_' + str(
+        individual_window_size) + '_' + str(head_to_head_window_size) + '.csv'), index=False)
