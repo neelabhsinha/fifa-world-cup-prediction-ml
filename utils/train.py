@@ -1,3 +1,4 @@
+from model.gradient_boost import GradientBoost
 from model.random_forest import RandomForest
 from model.pca import PCATransform
 from const import project_dir_path, data_dir_path, individual_window_size, head_to_head_window_size, last_n_data, \
@@ -8,6 +9,8 @@ from utils.classification_stats import ClassificationStatistics
 import pandas as pd
 import os.path as osp
 
+from utils.preprocess import generate_features
+
 
 def train(model_name, do_pca=False, tune=False):
     model = None
@@ -17,7 +20,9 @@ def train(model_name, do_pca=False, tune=False):
             individual_window_size) + '_' + str(head_to_head_window_size) + '.csv'))
     except FileNotFoundError:
         print('Features file not found. Please generate the features first.')
-        return
+        generate_features()
+        features = pd.read_csv(osp.join(data_dir_path, 'features_last_' + str(last_n_data) + '_windows_' + str(
+            individual_window_size) + '_' + str(head_to_head_window_size) + '.csv'))
     X_train, y_train = split_feature_and_labels(features)
     print('Data loaded')
     if do_pca:
@@ -30,6 +35,8 @@ def train(model_name, do_pca=False, tune=False):
     y_test = y_test.iloc[:, :1].squeeze()
     if model_name == 'random_forest':
         model = RandomForest()
+    elif model_name == 'gradient_boost':
+        model = GradientBoost()
     if tune:
         model.tune(x_train, y_train)
     else:
