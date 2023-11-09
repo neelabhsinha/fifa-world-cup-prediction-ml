@@ -23,8 +23,8 @@ models = ['random_forest', 'logistic_regression', 'gradient_boost']
 # ----Feature Selection Hyperparameters---- #
 individual_window_size = 5
 head_to_head_window_size = 5
-last_n_data = 5000
-pca_n_components = 15
+last_n_data = 40000
+pca_n_components = 5
 
 # ----Hyperparameter Search Space for Random Forest---- #
 random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=100, stop=1000, num=50)],

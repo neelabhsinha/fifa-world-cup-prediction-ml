@@ -13,12 +13,13 @@ def arg_parser():
                         choices=models)
     parser.add_argument('--tune', action='store_true', help='Tune hyperparameters for the model')
     parser.add_argument('--do_pca', action='store_true', help='Perform PCA on the data')
+    parser.add_argument('--select_features', action='store_true', help='Generate features from the data')
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = arg_parser()
     if args.task == 'train':
-        train(args.model, args.do_pca, args.tune)
+        train(args.model, args.do_pca, args.tune, args.select_features)
     elif args.task == 'preprocess':
         generate_features()

@@ -5,6 +5,7 @@ from const import project_dir_path, data_dir_path, individual_window_size, head_
     pca_n_components
 from data_loader.data_split import split_feature_and_labels, get_train_test_split
 from utils.classification_stats import ClassificationStatistics
+from data_loader.feature_selector import FeatureSelector
 
 import pandas as pd
 import os.path as osp
@@ -12,7 +13,7 @@ import os.path as osp
 from utils.preprocess import generate_features
 
 
-def train(model_name, do_pca=False, tune=False):
+def train(model_name, do_pca=False, tune=False, select_features=True):
     model = None
     print('Loading data')
     try:
@@ -24,19 +25,23 @@ def train(model_name, do_pca=False, tune=False):
         features = pd.read_csv(osp.join(data_dir_path, 'features_last_' + str(last_n_data) + '_windows_' + str(
             individual_window_size) + '_' + str(head_to_head_window_size) + '.csv'))
     X_train, y_train = split_feature_and_labels(features)
+    y_train = y_train.iloc[:, :1].squeeze()
     print('Data loaded')
+    if model_name == 'random_forest':
+        model = RandomForest()
+    elif model_name == 'gradient_boost':
+        model = GradientBoost()
+    if select_features:
+        print('Selecting features')
+        feature_selector = FeatureSelector(model, X_train, y_train)
+        selected_features = feature_selector.select_features()
     if do_pca:
         print('Performing PCA')
         pca = PCATransform(n_components=pca_n_components)
         pca.fit(X_train)
         pca_X_train = pca.transform(X_train)
+    X_train = X_train[selected_features] if select_features else X_train
     x_train, x_test, y_train, y_test = get_train_test_split(pca_X_train if do_pca else X_train, y_train)
-    y_train = y_train.iloc[:, :1].squeeze()
-    y_test = y_test.iloc[:, :1].squeeze()
-    if model_name == 'random_forest':
-        model = RandomForest()
-    elif model_name == 'gradient_boost':
-        model = GradientBoost()
     if tune:
         model.tune(x_train, y_train)
     else:
