@@ -20,11 +20,12 @@ class FeatureSelector:
                     self._model.fit(self._x_train[trial_features], self._y_train)
                     y_pred = self._model.predict(self._x_cv[trial_features])
                     accuracy = accuracy_score(self._y_cv, y_pred)
-                    if accuracy > best_accuracy - 0.01:
+                    if accuracy > best_accuracy:
                         best_feature = i
                         best_accuracy = accuracy
             if best_feature is not None:
                 selected_features.append(best_feature)
             else:
                 break
+        print('Selected features - ', selected_features)
         return selected_features

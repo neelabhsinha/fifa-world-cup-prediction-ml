@@ -21,13 +21,13 @@ class FeatureGenerator:
 
     def __call__(self, matches_df, multiprocessing=True):
         matches_df = matches_df[(
-                (matches_df['tournament'] == 'African Cup of Nations')
-                | (matches_df['tournament'] == 'Confederations Cup')
-                | (matches_df['tournament'] == 'Copa América')
-                | (matches_df['tournament'] == 'FIFA World Cup')
+                (matches_df['tournament'] == 'FIFA World Cup')
                 | (matches_df['tournament'] == 'FIFA World Cup qualification')
-                | (matches_df['tournament'] == 'UEFA Euro')
-                | (matches_df['tournament'] == 'UEFA Euro qualification')
+                # | (matches_df['tournament'] == 'African Cup of Nations')
+                # | (matches_df['tournament'] == 'Confederations Cup')
+                # | (matches_df['tournament'] == 'Copa América')
+                # | (matches_df['tournament'] == 'UEFA Euro')
+                # | (matches_df['tournament'] == 'UEFA Euro qualification')
         )]
         if multiprocessing:
             cpu_cores = mp.cpu_count()
