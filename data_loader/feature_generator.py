@@ -20,6 +20,15 @@ class FeatureGenerator:
         self._head_to_head_window_size = head_to_head_window_size
 
     def __call__(self, matches_df, multiprocessing=True):
+        matches_df = matches_df[(
+                (matches_df['tournament'] == 'African Cup of Nations')
+                | (matches_df['tournament'] == 'Confederations Cup')
+                | (matches_df['tournament'] == 'Copa América')
+                | (matches_df['tournament'] == 'FIFA World Cup')
+                | (matches_df['tournament'] == 'FIFA World Cup qualification')
+                | (matches_df['tournament'] == 'UEFA Euro')
+                | (matches_df['tournament'] == 'UEFA Euro qualification')
+        )]
         if multiprocessing:
             cpu_cores = mp.cpu_count()
             print('Running feature generation on {} cores'.format(cpu_cores))
@@ -49,18 +58,19 @@ class FeatureGenerator:
 
     def get_features(self, home_team, away_team, match_date, match_type, neutral=False):
         home_mean_goals_scored, home_mean_goals_conceded, home_std_goals_scored, home_std_goals_conceded = (
-            self._get_individual_statistics(home_team, match_date))
+            self._get_individual_statistics(home_team, match_date, match_type))
         away_mean_goals_scored, away_mean_goals_conceded, away_std_goals_scored, away_std_goals_conceded = (
-            self._get_individual_statistics(away_team, match_date))
+            self._get_individual_statistics(away_team, match_date, match_type))
         h2h_home_mean_goals, h2h_away_mean_goals, h2h_home_std_goals, h2h_team_std_goals = (
-            self._get_head_to_head_statistics(home_team, away_team, match_date))
+            self._get_head_to_head_statistics(home_team, away_team, match_date, match_type))
         home_rank, home_rank_change = self._get_closest_ranking_for_team(home_team, match_date)
         away_rank, away_rank_change = self._get_closest_ranking_for_team(away_team, match_date)
-        home_win_count = self._get_team_win_count(home_team, match_date)
-        away_win_count = self._get_team_win_count(away_team, match_date)
-        h2h_home_win_count, h2h_away_win_count = self._get_head_to_head_win_count(home_team, away_team, match_date)
-        home_team_opposition_rank_diff = self._get_average_opposition_rank_diff(home_team, match_date)
-        away_team_opposition_rank_diff = self._get_average_opposition_rank_diff(away_team, match_date)
+        home_win_count = self._get_team_win_count(home_team, match_date, match_type)
+        away_win_count = self._get_team_win_count(away_team, match_date, match_type)
+        h2h_home_win_count, h2h_away_win_count = self._get_head_to_head_win_count(home_team, away_team, match_date,
+                                                                                  match_type)
+        home_team_opposition_rank_diff = self._get_average_opposition_rank_diff(home_team, match_date, match_type)
+        away_team_opposition_rank_diff = self._get_average_opposition_rank_diff(away_team, match_date, match_type)
         is_friendly, is_qualifier, is_tournament = self._get_match_type(match_type)
         if neutral:
             home_match_for_home_team = 0
@@ -89,11 +99,12 @@ class FeatureGenerator:
             label_list = 0, 0, 1
         return np.array(label_list)[:, np.newaxis].T
 
-    def _get_individual_statistics(self, team, date_of_new_match):
+    def _get_individual_statistics(self, team, date_of_new_match, match_type):
         matches_before_date = self._match_results_df[self._match_results_df['date'] < pd.to_datetime(date_of_new_match)]
-        team_a_matches = matches_before_date[
-            ((matches_before_date['home_team'] == team) | (matches_before_date['away_team'] == team))].tail(
-            self._individual_window_size)
+        team_a_matches = (matches_before_date[(
+            ((matches_before_date['home_team'] == team) | (matches_before_date['away_team'] == team))
+            # & (matches_before_date['tournament'] == match_type)
+        )].tail(self._individual_window_size))
         if team_a_matches.empty:
             return 0, 0, 0, 0
         goals_scored = np.concatenate((team_a_matches[team_a_matches['home_team'] == team]['home_score'].to_numpy(),
@@ -106,11 +117,14 @@ class FeatureGenerator:
         std_goals_conceded = np.std(goals_conceded)
         return mean_goals_scored, mean_goals_conceded, std_goals_scored, std_goals_conceded
 
-    def _get_average_opposition_rank_diff(self, team, date_of_new_match):
-        matches_before_date = self._match_results_df[self._match_results_df['date'] < pd.to_datetime(date_of_new_match)]
-        team_a_matches = matches_before_date[
-            ((matches_before_date['home_team'] == team) | (matches_before_date['away_team'] == team))].tail(
-            self._individual_window_size)
+    def _get_average_opposition_rank_diff(self, team, date_of_new_match, match_type):
+        matches_before_date = self._match_results_df[(
+            (self._match_results_df['date'] < pd.to_datetime(date_of_new_match))
+            # & (self._match_results_df['tournament'] == match_type)
+        )]
+        team_a_matches = matches_before_date[(
+                (matches_before_date['home_team'] == team) | (matches_before_date['away_team'] == team)
+        )].tail(self._individual_window_size)
         if team_a_matches.empty:
             return 0
         opposition_rank_diff = []
@@ -127,12 +141,14 @@ class FeatureGenerator:
         opposition_rank_diff = np.array(opposition_rank_diff)
         return np.mean(opposition_rank_diff)
 
-    def _get_head_to_head_statistics(self, home_team, away_team, date_of_new_match):
+    def _get_head_to_head_statistics(self, home_team, away_team, date_of_new_match, match_type):
         self._match_results_df['date'] = pd.to_datetime(self._match_results_df['date'])
         matches_before_date = self._match_results_df[
             (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
-            (((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team)) |
-             ((self._match_results_df['home_team'] == away_team) & (self._match_results_df['away_team'] == home_team)))
+            # (self._match_results_df['tournament'] == match_type) &
+            (((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team))
+             | ((self._match_results_df['home_team'] == away_team) & (
+                                self._match_results_df['away_team'] == home_team)))
             ]
         head_to_head_matches = matches_before_date.tail(self._head_to_head_window_size)
         if head_to_head_matches.empty:
@@ -160,27 +176,29 @@ class FeatureGenerator:
         closest_rank_row = team_df[team_df['rank_date'] == closest_rank_date].iloc[0]
         return closest_rank_row['rank'], closest_rank_row['rank_change']
 
-    def _get_team_win_count(self, team, date_of_new_match):
+    def _get_team_win_count(self, team, date_of_new_match, match_type):
         matches_before_date = self._match_results_df[
             (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
+            # (self._match_results_df['tournament'] == match_type) &
             ((self._match_results_df['home_team'] == team) | (self._match_results_df['away_team'] == team))
             ].tail(self._individual_window_size)
         wins = matches_before_date[matches_before_date['home_score'] > matches_before_date['away_score']].shape[0]
         return wins
 
-    def _get_head_to_head_win_count(self, home_team, away_team, date_of_new_match):
+    def _get_head_to_head_win_count(self, home_team, away_team, date_of_new_match, match_type):
         matches_before_date = self._match_results_df[
             (self._match_results_df['date'] < pd.to_datetime(date_of_new_match)) &
+            # (self._match_results_df['tournament'] == match_type) &
             (((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team)) |
              ((self._match_results_df['home_team'] == away_team) & (self._match_results_df['away_team'] == home_team)))
             ].tail(self._head_to_head_window_size)
         home_team_wins = (matches_before_date[(matches_before_date['home_team'] == home_team) & (
-                    matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
-                         matches_before_date[(matches_before_date['away_team'] == home_team) & (
+                matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
+                             matches_before_date[(matches_before_date['away_team'] == home_team) & (
                                      matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
         away_team_wins = (matches_before_date[(matches_before_date['home_team'] == away_team) & (
-                    matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
-                         matches_before_date[(matches_before_date['away_team'] == away_team) & (
+                matches_before_date['home_score'] > matches_before_date['away_score'])].shape[0]) + (
+                             matches_before_date[(matches_before_date['away_team'] == away_team) & (
                                      matches_before_date['home_score'] < matches_before_date['away_score'])].shape[0])
         return home_team_wins, away_team_wins
 
