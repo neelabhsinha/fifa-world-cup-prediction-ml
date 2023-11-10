@@ -56,8 +56,8 @@ def train(model_name, do_pca=False, tune=False, select_features=True):
     print('Evaluating Model')
     y_hat_test = model.predict(x_test)
     y_hat_test_proba = model.predict_proba(x_test)
-    evaluator = ClassificationStatistics(model_name, x_test, y_test, y_hat_test, y_hat_test_proba)
-    evaluator.evaluate_model()
+    evaluator = ClassificationStatistics(model, model_name, x_train, y_train, x_test, y_test, y_hat_test, y_hat_test_proba)
+    evaluator.evaluate_model(extract_learning_curve=True)
 
 
 def load_model(model_name):

@@ -11,6 +11,9 @@ class RandomForest:
     def __init__(self):
         self._model = RandomForestClassifier()
 
+    def get_model(self):
+        return self._model
+
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = RandomForestClassifier(**hyperparameters)
 

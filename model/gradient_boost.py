@@ -9,6 +9,9 @@ class GradientBoost:
     def __init__(self):
         self._model = GradientBoostingClassifier()
 
+    def get_model(self):
+        return self._model
+
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = GradientBoostingClassifier(**hyperparameters)
 
