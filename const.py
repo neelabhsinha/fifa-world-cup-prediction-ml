@@ -21,30 +21,29 @@ label_keys = ['home_team_win', 'draw', 'away_team_win']
 models = ['random_forest', 'logistic_regression', 'gradient_boost']
 
 # ----Feature Selection Hyperparameters---- #
-individual_window_size = 5
-head_to_head_window_size = 5
-last_n_data = 40000
+individual_window_size = 15
+head_to_head_window_size = 15
+last_n_data = 44000
 pca_n_components = 5
 
 # ----Hyperparameter Search Space for Random Forest---- #
-random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=100, stop=1000, num=50)],
+random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=100, stop=1000, num=10)],
                         'min_samples_split': [int(x) for x in np.linspace(1, 10)],
-                        'min_samples_leaf': [int(x) for x in np.linspace(1,15, num=2)],
-                        'max_depth': [int(x) for x in np.linspace(10, 100, num=10)],
+                        'min_samples_leaf': [int(x) for x in np.linspace(1, 10, num=1)],
+                        'max_depth': [int(x) for x in np.linspace(10, 200, num=10)],
                         'max_features': ['log2', 'sqrt'],
-                        'bootstrap': [False]
+                        'bootstrap': [True, False]
                         }
 
 # ----Hyperparameter Search Space for Gradient Boosters ---- #
 gradient_boost_params = {
-    'n_estimators': [int(x) for x in np.linspace(50, 200, 10)],
-    'learning_rate': [0.001, 0.01, 0.1, 0.2, 0.3],
-    'max_depth': [int(x) for x in np.linspace(5, 50, 5)],
+    'n_estimators': [int(x) for x in np.linspace(100, 1000, 10)],
+    'learning_rate': [0.00001, 0.0001, 0.001, 0.01, 0.1],
+    'max_depth': [int(x) for x in np.linspace(10, 200, 10)],
     'min_samples_split': [int(x) for x in np.linspace(1, 10)],
-    'min_samples_leaf': [int(x) for x in np.linspace(1,15, num=2)],
+    'min_samples_leaf': [int(x) for x in np.linspace(1, 10, num=1)],
     'subsample': np.arange(0.5, 1.0, 0.05),
 }
 
-
-n_iters = 3
-cv = 5
+n_iters = 200
+cv = 10
