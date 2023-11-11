@@ -1,4 +1,6 @@
 import argparse
+import datetime
+
 from const import models, data_dir_path, individual_window_size, head_to_head_window_size
 from utils.preprocess import generate_features
 from utils.tournament_simulator import TournamentSimulator
@@ -28,8 +30,8 @@ if __name__ == '__main__':
     elif args.task == 'preprocess':
         generate_features()
     elif args.simulate_tournament:
-        tournamentSimulator= TournamentSimulator(datetime.date(2022,11,7))
-        winner= tournamentSimulator.playKnockOuts()
+        tournamentSimulator = TournamentSimulator(datetime.date(2022, 11, 7))
+        winner = tournamentSimulator.playKnockOuts()
         print(winner[0])
 
     elif args.task == 'generate_artificial_data':
