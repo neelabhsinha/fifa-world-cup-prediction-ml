@@ -1,6 +1,8 @@
 import argparse
+import datetime
 from const import models, data_dir_path, individual_window_size, head_to_head_window_size
 from utils.preprocess import generate_features
+from utils.tournament_simulator import TournamentSimulator
 
 from utils.train import train
 
@@ -14,6 +16,7 @@ def arg_parser():
     parser.add_argument('--tune', action='store_true', help='Tune hyperparameters for the model')
     parser.add_argument('--do_pca', action='store_true', help='Perform PCA on the data')
     parser.add_argument('--select_features', action='store_true', help='Generate features from the data')
+    parser.add_argument('--simulate_tournament', action='store_true', help='Simulate a tournament')
     return parser.parse_args()
 
 
@@ -23,3 +26,8 @@ if __name__ == '__main__':
         train(args.model, args.do_pca, args.tune, args.select_features)
     elif args.task == 'preprocess':
         generate_features()
+    elif args.simulate_tournament:
+        tournamentSimulator= TournamentSimulator(datetime.date(2022,11,7))
+        winner= tournamentSimulator.playKnockOuts()
+        print(winner[0])
+    
