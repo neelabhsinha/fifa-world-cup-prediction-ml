@@ -55,3 +55,16 @@ svm_param_distributions = {
 
 n_iters = 50
 cv = 5
+
+
+#FIFA 2022 Groups
+WCGroups= [
+    ['Qatar', 'Ecuador', 'Senegal', 'Netherlands'],
+    ['England', 'Iran', 'USA', 'Wales'],
+    ['Argentina', 'Saudi Arabia', 'Mexico', 'Poland'],
+    ['France', 'Australia', 'Denmark', 'Tunisia'],
+    ['Spain', 'Costa Rica', 'Germany', 'Japan'],
+    ['Belgium', 'Canada', 'Morocco', 'Croatia'],
+    ['Brazil', 'Serbia', 'Switzerland', 'Cameroon'],
+    ['Portugal', 'Ghana', 'Uruguay', 'South Korea']
+]
