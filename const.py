@@ -18,7 +18,7 @@ features_keys = [
 
 label_keys = ['home_team_win', 'draw', 'away_team_win']
 
-models = ['random_forest', 'logistic_regression', 'gradient_boost']
+models = ['random_forest', 'logistic_regression', 'gradient_boost', 'svm']
 
 # ----Feature Selection Hyperparameters---- #
 individual_window_size = 15
@@ -27,13 +27,13 @@ last_n_data = 44000
 pca_n_components = 5
 
 # ----Hyperparameter Search Space for Random Forest---- #
-random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=100, stop=1000, num=10)],
-                        'min_samples_split': [int(x) for x in np.linspace(1, 10)],
-                        'min_samples_leaf': [int(x) for x in np.linspace(1, 10, num=1)],
-                        'max_depth': [int(x) for x in np.linspace(10, 200, num=10)],
+random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=50, stop=500, num=10)],
+                        'min_samples_split': [int(x) for x in np.linspace(1, 20)],
+                        'min_samples_leaf': [int(x) for x in np.linspace(2, 20, num=1)],
+                        'max_depth': [int(x) for x in np.linspace(10, 100, num=10)],
                         'max_features': ['log2', 'sqrt'],
-                        'bootstrap': [True, False]
-                        }
+                        'bootstrap': [True]
+}
 
 # ----Hyperparameter Search Space for Gradient Boosters ---- #
 gradient_boost_params = {
@@ -45,5 +45,13 @@ gradient_boost_params = {
     'subsample': np.arange(0.5, 1.0, 0.05),
 }
 
-n_iters = 200
-cv = 10
+# ----Hyperparameter Search Space for SVM ---- #
+svm_param_distributions = {
+    'C': np.logspace(-5, -3, 20),
+    'gamma': np.logspace(-5, -1, 20),
+    'kernel': ['linear', 'rbf'],
+    "probability": [True]
+}
+
+n_iters = 50
+cv = 5

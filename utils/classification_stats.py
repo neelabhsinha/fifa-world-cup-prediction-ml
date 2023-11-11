@@ -25,7 +25,7 @@ class ClassificationStatistics:
 
     def get_confusion_matrix(self):
         cm = confusion_matrix(self._y_actual, self._y_predicted)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=self._model.get_model().classes_)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0.0, 1.0])
         disp.plot()
         if not os.path.exists(project_dir_path + '/results/' + self._model_name):
             os.mkdir(project_dir_path + '/results/' + self._model_name)

@@ -20,15 +20,7 @@ class FeatureGenerator:
         self._head_to_head_window_size = head_to_head_window_size
 
     def __call__(self, matches_df, multiprocessing=True):
-        matches_df = matches_df[(
-                (matches_df['tournament'] == 'FIFA World Cup')
-                | (matches_df['tournament'] == 'FIFA World Cup qualification')
-                # | (matches_df['tournament'] == 'African Cup of Nations')
-                # | (matches_df['tournament'] == 'Confederations Cup')
-                # | (matches_df['tournament'] == 'Copa América')
-                # | (matches_df['tournament'] == 'UEFA Euro')
-                # | (matches_df['tournament'] == 'UEFA Euro qualification')
-        )]
+        matches_df = self.get_world_cup_matches(matches_df)
         if multiprocessing:
             cpu_cores = mp.cpu_count()
             print('Running feature generation on {} cores'.format(cpu_cores))
@@ -44,6 +36,17 @@ class FeatureGenerator:
         features_labels_df.columns = features_keys + label_keys
         print('Feature generation complete')
         return features_labels_df
+
+    def get_world_cup_matches(self, matches_df):
+        return matches_df[(
+                (matches_df['tournament'] == 'FIFA World Cup')
+                | (matches_df['tournament'] == 'FIFA World Cup qualification')
+            # | (matches_df['tournament'] == 'African Cup of Nations')
+            # | (matches_df['tournament'] == 'Confederations Cup')
+            # | (matches_df['tournament'] == 'Copa América')
+            # | (matches_df['tournament'] == 'UEFA Euro')
+            # | (matches_df['tournament'] == 'UEFA Euro qualification')
+        )]
 
     def _process_rows_parallel(self, matches_df_chunk):
         return matches_df_chunk.apply(self._process_row, axis=1)
@@ -95,6 +98,8 @@ class FeatureGenerator:
             label_list = 1, 0, 0
         elif home_score < away_score:
             label_list = 0, 1, 0
+        elif home_score == 1 and away_score == -1:
+            label_list = -1, -1, -1
         else:
             label_list = 0, 0, 1
         return np.array(label_list)[:, np.newaxis].T
@@ -148,7 +153,7 @@ class FeatureGenerator:
             # (self._match_results_df['tournament'] == match_type) &
             (((self._match_results_df['home_team'] == home_team) & (self._match_results_df['away_team'] == away_team))
              | ((self._match_results_df['home_team'] == away_team) & (
-                                self._match_results_df['away_team'] == home_team)))
+                            self._match_results_df['away_team'] == home_team)))
             ]
         head_to_head_matches = matches_before_date.tail(self._head_to_head_window_size)
         if head_to_head_matches.empty:
