@@ -27,10 +27,10 @@ last_n_data = 44000
 pca_n_components = 5
 
 # ----Hyperparameter Search Space for Random Forest---- #
-random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=50, stop=500, num=10)],
-                        'min_samples_split': [int(x) for x in np.linspace(1, 20)],
-                        'min_samples_leaf': [int(x) for x in np.linspace(2, 20, num=1)],
-                        'max_depth': [int(x) for x in np.linspace(10, 100, num=10)],
+random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, stop=25, num=2)],
+                        'min_samples_split': [int(x) for x in np.linspace(5, 30)],
+                        'min_samples_leaf': [int(x) for x in np.linspace(5, 30, num=1)],
+                        'max_depth': [int(x) for x in np.linspace(1, 20, num=2)],
                         'max_features': ['log2', 'sqrt'],
                         'bootstrap': [True]
 }
@@ -53,7 +53,7 @@ svm_param_distributions = {
     "probability": [True]
 }
 
-n_iters = 50
+n_iters = 100
 cv = 5
 
 

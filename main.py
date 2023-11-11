@@ -26,7 +26,7 @@ def arg_parser():
 if __name__ == '__main__':
     args = arg_parser()
     if args.task == 'train':
-        train(args.model, args.do_pca, args.tune, args.select_features)
+        train(args.model, args.do_pca, args.tune, args.select_features, args.use_artificial_data)
     elif args.task == 'preprocess':
         generate_features()
     elif args.simulate_tournament:

@@ -70,7 +70,7 @@ def train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi
         # train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi_supervised=False)
     evaluator = ClassificationStatistics(model, model_name, x_train, y_train, x_test, y_test, y_hat_test,
                                          y_hat_test_proba)
-    evaluator.evaluate_model(extract_learning_curve=True)
+    evaluator.evaluate_model(extract_learning_curve=not semi_supervised)
 
 
 def load_model(model_name):
