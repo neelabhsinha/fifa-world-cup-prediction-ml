@@ -14,12 +14,12 @@
 ### Match Prediction
 - Feature Extraction
 - Feature Selection - PCA, F/W Feature Selection
-- Algorithms: Logistic Regression, SVM, Decision Trees, Random Forest
+- Algorithms: Logistic Regression, SVM, Decision Trees, Random Forest, Gradient Boost
 - Semi-supervised learning approach
 - Evaluation Metrics
 
 ### Groupings
-TBA after midsem
+TBA after midsem (probably copy paste what is still there in report)
 
 ## Implementation Details
 - Describe the data (add EDA figures)
@@ -27,7 +27,11 @@ TBA after midsem
 
 ### Match Prediction
 - Data selection (removing the data of other tournaments)
+  - Cover which data points were removed and why
+  - Cover converting to a binary classification problem
 - Hyperparameter tuning
+  - Cover random search
+  - Describe search spaces
 - Train test split
 - Experimental setup
 
@@ -44,17 +48,17 @@ TBA after midsem
    5) For logistic regression - results as a function of C
    6) For decision tree - decision tree
    7) For SVM - results as a function of C, results as a function of gamma, results with linear and rbf kernel
-   5) Discussion
+   5) Discussion (which models perform how, why, etc.)
 2) Impact of Ensemble Learning - refer figure from before section and describe overfitting scenarios of ensemble learning approach
 3) Impact of Semi-supervised Learning (pick one ensemble and one simple model to compare)
    1) Table with precision, recall, accuracy, f1-score, AUC
    2) Figure containing confusion matrix
-   3) Discussion
+   3) Discussion (why semi-supervised learning did not help)
 4) Impact of Feature Selection - pick two models for this approach and all metrics in section 1
    1) without anything
    2) with PCA
    3) with feature selection
-   4) Discussion
+   4) Discussion (feature selection and PCA did not help)
 
 ### Groupings
 TBA after midsem
