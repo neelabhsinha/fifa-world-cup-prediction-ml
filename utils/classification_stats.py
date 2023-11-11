@@ -3,6 +3,8 @@ import os.path
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, roc_auc_score, f1_score, \
     precision_score, recall_score, roc_curve, auc, ConfusionMatrixDisplay
 from sklearn.model_selection import learning_curve
+from sklearn.tree import plot_tree
+
 from const import project_dir_path
 
 import matplotlib.pyplot as plt
@@ -65,6 +67,7 @@ class ClassificationStatistics:
         print('Recall Score: ', self.get_recall_score())
         if extract_learning_curve:
             self.save_learning_curve()
+        self.save_decision_graph_for_decision_tree()
 
     def save_roc_curve(self, fpr, tpr, roc_auc):
         plt.title('Receiver Operating Characteristic for ' + self._model_name)
@@ -103,4 +106,16 @@ class ClassificationStatistics:
         if not os.path.exists(project_dir_path + '/results/' + self._model_name):
             os.mkdir(project_dir_path + '/results/' + self._model_name)
         plt.savefig(project_dir_path + '/results/' + self._model_name + '/learning_curve.png')
+        plt.close()
+
+    def save_decision_graph_for_decision_tree(self):
+        if 'decision_tree' not in self._model_name:
+            return
+        if not os.path.exists(project_dir_path + '/results/' + self._model_name):
+            os.mkdir(project_dir_path + '/results/' + self._model_name)
+        plt.figure(figsize=(150, 30))
+        plot_tree(self._model.get_model(), filled=True, rounded=True, fontsize=13,
+                  class_names=['0', '1'],
+                  feature_names=self._X_test.columns.tolist())
+        plt.savefig(project_dir_path + '/results/' + self._model_name + '/decision_tree.png')
         plt.close()

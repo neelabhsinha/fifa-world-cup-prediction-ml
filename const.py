@@ -18,7 +18,7 @@ features_keys = [
 
 label_keys = ['home_team_win', 'draw', 'away_team_win']
 
-models = ['random_forest', 'logistic_regression', 'gradient_boost', 'svm']
+models = ['random_forest', 'logistic_regression', 'gradient_boost', 'svm', 'decision_tree']
 
 # ----Feature Selection Hyperparameters---- #
 individual_window_size = 15
@@ -33,7 +33,7 @@ random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, st
                         'max_depth': [int(x) for x in np.linspace(1, 20, num=2)],
                         'max_features': ['log2', 'sqrt'],
                         'bootstrap': [True]
-}
+                        }
 
 # ----Hyperparameter Search Space for Gradient Boosters ---- #
 gradient_boost_params = {
@@ -53,12 +53,19 @@ svm_param_distributions = {
     "probability": [True]
 }
 
-n_iters = 100
+# ----Hyperparameter Search Space for Decision Tree ---- #
+decision_tree_params = {
+    'max_depth': [None] + list(range(1, 200)),
+    'min_samples_split': range(1, 30),
+    'min_samples_leaf': range(1, 30),
+    'criterion': ['gini', 'entropy']
+}
+
+n_iters = 200
 cv = 5
 
-
-#FIFA 2022 Groups
-WCGroups= [
+# FIFA 2022 Groups
+WCGroups = [
     ['Qatar', 'Ecuador', 'Senegal', 'Netherlands'],
     ['England', 'Iran', 'USA', 'Wales'],
     ['Argentina', 'Saudi Arabia', 'Mexico', 'Poland'],

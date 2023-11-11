@@ -1,3 +1,4 @@
+from model.decision_tree import DecisionTree
 from model.gradient_boost import GradientBoost
 from model.random_forest import RandomForest
 from model.pca import PCATransform
@@ -25,6 +26,8 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
         model = GradientBoost()
     elif model_name == 'svm':
         model = SVM()
+    elif model_name == 'decision_tree':
+        model = DecisionTree()
     if select_features:
         print('Selecting features')
         feature_selector = FeatureSelector(model, X, y)
