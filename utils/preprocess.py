@@ -3,8 +3,8 @@ from const import data_dir_path, source_dir, individual_window_size, head_to_hea
 import pandas as pd
 import os.path as osp
 
-from data_loader.feature_generator import FeatureGenerator
-from data_loader.artificial_data_generator import ArtificialDataGenerator
+from feature.feature_generator import FeatureGenerator
+from feature.artificial_data_generator import ArtificialDataGenerator
 
 
 def generate_features():

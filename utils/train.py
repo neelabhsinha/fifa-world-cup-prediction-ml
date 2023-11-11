@@ -4,11 +4,11 @@ from model.random_forest import RandomForest
 from model.pca import PCATransform
 from const import project_dir_path, data_dir_path, individual_window_size, head_to_head_window_size, last_n_data, \
     pca_n_components
-from data_loader.data_split import split_feature_and_labels, get_train_test_split
+from feature.data_split import split_feature_and_labels, get_train_test_split
 from model.semi_supervised import SemiSupervisedClassifier
 from model.svm import SVM
 from utils.classification_stats import ClassificationStatistics
-from data_loader.feature_selector import FeatureSelector
+from feature.feature_selector import FeatureSelector
 
 import pandas as pd
 import os.path as osp

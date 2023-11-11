@@ -1,8 +1,8 @@
 import numpy as np
 
 # ---- Change the following paths as per your system ---- #
-data_dir_path = '/Users/neelabh/Desktop/Work/Projects/CS 7641 ML/data'
-project_dir_path = '/Users/neelabh/Desktop/Work/Projects/CS 7641 ML/code'
+data_dir_path = './data'
+project_dir_path = '.'
 # ----Not needed to be changed---- #
 source_dir = 'source'
 
