@@ -1,0 +1,19 @@
+Results for Model:  Support Vector Machine Semi Supervised
+Confusion Matrix: 
+ [[596 307]
+ [209 665]]
+Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.74      0.66      0.70       903
+         1.0       0.68      0.76      0.72       874
+
+    accuracy                           0.71      1777
+   macro avg       0.71      0.71      0.71      1777
+weighted avg       0.71      0.71      0.71      1777
+
+Accuracy Score:  0.7096229600450197
+ROC AUC Score:  0.2090932589309472
+F1 Score:  0.7090002041070667
+Precision Score:  0.7127232395251827
+Recall Score:  0.7096229600450197

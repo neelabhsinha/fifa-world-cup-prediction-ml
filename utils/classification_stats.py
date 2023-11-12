@@ -57,14 +57,17 @@ class ClassificationStatistics:
         return recall_score(self._y_actual, self._y_predicted, average=self._averaging)
 
     def evaluate_model(self, extract_learning_curve=True):
-        print('Results for Model: ', self._model_name)
-        print('Confusion Matrix: \n', self.get_confusion_matrix())
-        print('Classification Report: \n', self.get_classification_report())
-        print('Accuracy Score: ', self.get_accuracy_score())
-        print('ROC AUC Score: ', self.get_roc_auc_score())
-        print('F1 Score: ', self.get_f1_score())
-        print('Precision Score: ', self.get_precision_score())
-        print('Recall Score: ', self.get_recall_score())
+        if not os.path.exists(project_dir_path + '/results/' + self._model_name):
+            os.mkdir(project_dir_path + '/results/' + self._model_name)
+        with open(project_dir_path + '/results/' + self._model_name + '/classification_report.txt', 'w') as f:
+            print('Results for Model: ', self._model_name, file=f)
+            print('Confusion Matrix: \n', self.get_confusion_matrix(), file=f)
+            print('Classification Report: \n', self.get_classification_report(), file=f)
+            print('Accuracy Score: ', self.get_accuracy_score(), file=f)
+            print('ROC AUC Score: ', self.get_roc_auc_score(), file=f)
+            print('F1 Score: ', self.get_f1_score(), file=f)
+            print('Precision Score: ', self.get_precision_score(), file=f)
+            print('Recall Score: ', self.get_recall_score(), file=f)
         if extract_learning_curve:
             self.save_learning_curve()
         self.save_decision_graph_for_decision_tree()

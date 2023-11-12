@@ -1,0 +1,19 @@
+Results for Model:  Decision Tree
+Confusion Matrix: 
+ [[600 303]
+ [224 650]]
+Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.73      0.66      0.69       903
+         1.0       0.68      0.74      0.71       874
+
+    accuracy                           0.70      1777
+   macro avg       0.71      0.70      0.70      1777
+weighted avg       0.71      0.70      0.70      1777
+
+Accuracy Score:  0.7034327518289252
+ROC AUC Score:  0.23616485602276677
+F1 Score:  0.7030614822220993
+Precision Score:  0.7054821583873461
+Recall Score:  0.7034327518289252

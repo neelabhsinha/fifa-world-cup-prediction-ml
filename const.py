@@ -37,11 +37,11 @@ random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, st
 
 # ----Hyperparameter Search Space for Gradient Boosters ---- #
 gradient_boost_params = {
-    'n_estimators': [int(x) for x in np.linspace(100, 1000, 10)],
+    'n_estimators': [int(x) for x in np.linspace(1, 25, 2)],
     'learning_rate': [0.00001, 0.0001, 0.001, 0.01, 0.1],
-    'max_depth': [int(x) for x in np.linspace(10, 200, 10)],
-    'min_samples_split': [int(x) for x in np.linspace(1, 10)],
-    'min_samples_leaf': [int(x) for x in np.linspace(1, 10, num=1)],
+    'max_depth': [int(x) for x in np.linspace(1, 20, 2)],
+    'min_samples_split': [int(x) for x in np.linspace(5, 30)],
+    'min_samples_leaf': [int(x) for x in np.linspace(5, 30, num=1)],
     'subsample': np.arange(0.5, 1.0, 0.05),
 }
 

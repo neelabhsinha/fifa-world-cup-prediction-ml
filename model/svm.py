@@ -42,7 +42,7 @@ class SVM:
         params = svm_param_distributions
         best_params = self.tune_hyperparameters_random_search(X, y, params['C'], params['gamma'], params['kernel'],
                                                               cv=cv, n_jobs=-1, verbose=2, n_iter=n_iters)
-        with open(project_dir_path + '/model_hyperparameters/svm.pkl', 'wb') as f:
+        with open(project_dir_path + '/model_hyperparameters/support_vector_machine.pkl', 'wb') as f:
             pickle.dump(best_params, f)
             f.close()
         self.initialize_model_hyperparameters(**best_params)

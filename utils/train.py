@@ -24,7 +24,7 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
         model = RandomForest()
     elif model_name == 'gradient_boost':
         model = GradientBoost()
-    elif model_name == 'svm':
+    elif model_name == 'support_vector_machine':
         model = SVM()
     elif model_name == 'decision_tree':
         model = DecisionTree()
