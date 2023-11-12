@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+from joblib import dump, load
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
@@ -8,11 +9,18 @@ from const import random_forest_params, project_dir_path, n_iters, cv
 
 class RandomForest:
 
-    def __init__(self):
+    def __init__(self, name='random_forest'):
         self._model = RandomForestClassifier()
+        self._model_name = name
 
     def get_model(self):
         return self._model
+
+    def save_model(self):
+        dump(self._model, project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
+
+    def load_model(self):
+        self._model = load(project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
 
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = RandomForestClassifier(**hyperparameters)

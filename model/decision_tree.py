@@ -2,16 +2,24 @@ import pickle
 
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.tree import DecisionTreeClassifier
+from joblib import dump, load
 
 from const import decision_tree_params, cv, n_iters, project_dir_path
 
 
 class DecisionTree:
-    def __init__(self):
+    def __init__(self, model_name='decision_tree'):
         self._model = DecisionTreeClassifier()
+        self._model_name = model_name
 
     def get_model(self):
         return self._model
+
+    def save_model(self):
+        dump(self._model, project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
+
+    def load_model(self):
+        self._model = load(project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
 
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = DecisionTreeClassifier(**hyperparameters)
@@ -47,4 +55,3 @@ class DecisionTree:
             pickle.dump(best_params, f)
             f.close()
         self.initialize_model_hyperparameters(**best_params)
-

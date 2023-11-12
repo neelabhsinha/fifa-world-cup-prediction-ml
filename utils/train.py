@@ -50,7 +50,7 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
     train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test)
     if semi_supervised:
         model_name = model_name + '_semi_supervised'
-        model = SemiSupervisedClassifier(base_model=model, threshold=0.75)
+        model = SemiSupervisedClassifier(base_model=model, model_name=model_name, threshold=0.75)
         artificial_X, artificial_y = load_data(artificial=True)
         x_train = pd.concat([x_train, artificial_X], ignore_index=True)
         artificial_y.loc[:] = -1
@@ -67,12 +67,9 @@ def train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi
     y_hat_test_proba = model.predict_proba(x_test)
     if semi_supervised:
         y_train = model.get_self_training_model().transduction_
-        # model = model.get_model()
-        # x_train = x_train[y_train != -1]
-        # y_train = y_train[y_train != -1]
-        # train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi_supervised=False)
     evaluator = ClassificationStatistics(model, model_name, x_train, y_train, x_test, y_test, y_hat_test,
                                          y_hat_test_proba)
+    model.save_model()
     evaluator.evaluate_model(extract_learning_curve=not semi_supervised)
 
 

@@ -1,3 +1,4 @@
+from joblib import dump, load
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -6,11 +7,18 @@ import pickle
 
 
 class GradientBoost:
-    def __init__(self):
+    def __init__(self, model_name='gradient_boost'):
         self._model = GradientBoostingClassifier()
+        self._model_name = model_name
 
     def get_model(self):
         return self._model
+
+    def save_model(self):
+        dump(self._model, project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
+
+    def load_model(self):
+        self._model = load(project_dir_path + '/model_parameters/' + self._model_name + '.joblib')
 
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = GradientBoostingClassifier(**hyperparameters)
@@ -33,7 +41,7 @@ class GradientBoost:
     def tune(self, X, y):
         params = gradient_boost_params
         best_params = self.tune_hyperparameters_random_search(params, X, y, cv=cv, n_jobs=-1, verbose=2, n_iter=n_iters)
-        with open(project_dir_path + '/model_hyperparameters/random_forest.pkl', 'wb') as f:
+        with open(project_dir_path + '/model_hyperparameters/gradient_boost.pkl', 'wb') as f:
             pickle.dump(best_params, f)
             f.close()
         self.initialize_model_hyperparameters(**best_params)
