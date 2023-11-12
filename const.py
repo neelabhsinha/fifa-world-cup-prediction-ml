@@ -18,7 +18,7 @@ features_keys = [
 
 label_keys = ['home_team_win', 'draw', 'away_team_win']
 
-models = ['random_forest', 'logistic_regression', 'gradient_boost', 'svm', 'decision_tree']
+models = ['random_forest', 'logistic_regression', 'gradient_boost', 'support_vector_machine', 'decision_tree']
 
 # ----Feature Selection Hyperparameters---- #
 individual_window_size = 15

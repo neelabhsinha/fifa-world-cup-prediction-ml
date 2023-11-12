@@ -23,7 +23,7 @@ class ClassificationStatistics:
         self._model = model
         self._X_train = X_train
         self._y_train = y_train
-        self._model_name = model_name
+        self._model_name = ' '.join(word.capitalize() for word in model_name.split('_'))
 
     def get_confusion_matrix(self):
         cm = confusion_matrix(self._y_actual, self._y_predicted)
@@ -109,7 +109,7 @@ class ClassificationStatistics:
         plt.close()
 
     def save_decision_graph_for_decision_tree(self):
-        if 'decision_tree' not in self._model_name:
+        if 'decision' not in self._model_name.lower():
             return
         if not os.path.exists(project_dir_path + '/results/' + self._model_name):
             os.mkdir(project_dir_path + '/results/' + self._model_name)
