@@ -1,11 +1,15 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-
+from const import logistic_regression_params, project_dir_path, n_iters, cv
+import pickle
 class LogisticRegressionClass:
 
     def __init__(self):
         self._model = LogisticRegression()
+        
+    def get_model(self):
+        return self._model
 
     def initialize_model_hyperparameters(self, **hyperparameters):
         self._model = LogisticRegression(**hyperparameters)
@@ -47,4 +51,12 @@ class LogisticRegressionClass:
 
     def score(self, X_test, y_test):
         return self._model.score(X_test, y_test)
+    
+    def tune(self,X, y):
+        params = logistic_regression_params
+        best_params = self.tune_hyperparameters_random_search( X, y, params['solver'], params['penalty'], params['C'], cv=cv, n_jobs=-1, verbose=2, n_iter=n_iters)
+        with open(project_dir_path + '/model_hyperparameters/logistic_regression.pkl', 'wb') as f:
+            pickle.dump(best_params, f)
+            f.close()
+        self.initialize_model_hyperparameters(**best_params)
 

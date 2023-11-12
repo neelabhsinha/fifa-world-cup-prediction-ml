@@ -35,7 +35,13 @@ random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, st
                         'bootstrap': [True]
                         }
 
-# ----Hyperparameter Search Space for Gradient Boosters ---- #
+# ----Hyperparameter Search Space for Logistic Regression ---- #
+logistic_regression_params = {
+    'solver' : ['newton-cg','lbfgs','liblinear','sag','saga','newton-cholesky'],
+    'penalty' : ['l2'],
+    'C' : [100, 10, 1.0, 0.1, 0.01],
+}
+
 gradient_boost_params = {
     'n_estimators': [int(x) for x in np.linspace(1, 25, 2)],
     'learning_rate': [0.00001, 0.0001, 0.001, 0.01, 0.1],
