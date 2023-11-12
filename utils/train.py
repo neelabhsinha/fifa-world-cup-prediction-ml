@@ -7,6 +7,7 @@ from const import project_dir_path, data_dir_path, individual_window_size, head_
 from feature.data_split import split_feature_and_labels, get_train_test_split
 from model.semi_supervised import SemiSupervisedClassifier
 from model.svm import SVM
+from model.logistic_regression_class import LogisticRegressionClass
 from utils.classification_stats import ClassificationStatistics
 from feature.feature_selector import FeatureSelector
 
@@ -28,6 +29,8 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
         model = SVM()
     elif model_name == 'decision_tree':
         model = DecisionTree()
+    elif model_name == 'logistic_regression':
+        model = LogisticRegressionClass()
     if select_features:
         print('Selecting features')
         feature_selector = FeatureSelector(model, X, y)
