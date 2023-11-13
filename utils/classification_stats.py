@@ -42,10 +42,10 @@ class ClassificationStatistics:
         return accuracy_score(self._y_actual, self._y_predicted)
 
     def get_roc_auc_score(self):
-        fpr, tpr, thresholds = roc_curve(self._y_actual, self._y_predicted_proba[:, 0])
+        fpr, tpr, thresholds = roc_curve(self._y_actual, self._y_predicted_proba[:, 1])
         auc_score = auc(fpr, tpr)
         self.save_roc_curve(fpr, tpr, auc_score)
-        return roc_auc_score(self._y_actual, self._y_predicted_proba[:, 0])
+        return roc_auc_score(self._y_actual, self._y_predicted_proba[:, 1])
 
     def get_f1_score(self):
         return f1_score(self._y_actual, self._y_predicted, average=self._averaging)
@@ -74,7 +74,7 @@ class ClassificationStatistics:
 
     def save_roc_curve(self, fpr, tpr, roc_auc):
         plt.title('Receiver Operating Characteristic for ' + self._model_name)
-        plt.plot(tpr, fpr, 'b', label='AUC = %0.2f' % roc_auc)
+        plt.plot(fpr, tpr, 'b', label='AUC = %0.2f' % roc_auc)
         plt.legend(loc='lower right')
         plt.plot([0, 1], [0, 1], 'r--')
         plt.xlim([0, 1])

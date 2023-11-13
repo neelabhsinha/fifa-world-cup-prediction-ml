@@ -53,7 +53,7 @@ gradient_boost_params = {
 
 # ----Hyperparameter Search Space for SVM ---- #
 svm_param_distributions = {
-    'C': np.logspace(-5, -3, 20),
+    'C': np.logspace(-5, 1, 20),
     'gamma': np.logspace(-5, -1, 20),
     'kernel': ['linear', 'rbf'],
     "probability": [True]

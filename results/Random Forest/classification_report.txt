@@ -1,19 +1,19 @@
 Results for Model:  Random Forest
 Confusion Matrix: 
- [[621 282]
- [217 657]]
+ [[622 281]
+ [227 647]]
 Classification Report: 
                precision    recall  f1-score   support
 
-         0.0       0.74      0.69      0.71       903
-         1.0       0.70      0.75      0.72       874
+         0.0       0.73      0.69      0.71       903
+         1.0       0.70      0.74      0.72       874
 
-    accuracy                           0.72      1777
-   macro avg       0.72      0.72      0.72      1777
-weighted avg       0.72      0.72      0.72      1777
+    accuracy                           0.71      1777
+   macro avg       0.71      0.71      0.71      1777
+weighted avg       0.72      0.71      0.71      1777
 
-Accuracy Score:  0.7191896454698931
-ROC AUC Score:  0.20359607309476926
-F1 Score:  0.7189814686355991
-Precision Score:  0.7207028838096377
-Recall Score:  0.7191896454698931
+Accuracy Score:  0.7141249296567248
+ROC AUC Score:  0.7929112467721375
+F1 Score:  0.7140026874547056
+Precision Score:  0.7152015366118619
+Recall Score:  0.7141249296567248
