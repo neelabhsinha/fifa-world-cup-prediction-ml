@@ -1,19 +1,19 @@
 Results for Model:  Decision Tree Semi Supervised
 Confusion Matrix: 
- [[664 239]
- [314 560]]
+ [[545 358]
+ [189 685]]
 Classification Report: 
                precision    recall  f1-score   support
 
-         0.0       0.68      0.74      0.71       903
-         1.0       0.70      0.64      0.67       874
+         0.0       0.74      0.60      0.67       903
+         1.0       0.66      0.78      0.71       874
 
     accuracy                           0.69      1777
-   macro avg       0.69      0.69      0.69      1777
-weighted avg       0.69      0.69      0.69      1777
+   macro avg       0.70      0.69      0.69      1777
+weighted avg       0.70      0.69      0.69      1777
 
-Accuracy Score:  0.6888013505908835
-ROC AUC Score:  0.7495292832688394
-F1 Score:  0.6880300075428262
-Precision Score:  0.689727327931989
-Recall Score:  0.6888013505908835
+Accuracy Score:  0.6921778277996623
+ROC AUC Score:  0.7470635638641598
+F1 Score:  0.689856995037765
+Precision Score:  0.7003327638763787
+Recall Score:  0.6921778277996623

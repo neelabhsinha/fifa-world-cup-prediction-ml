@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix, classification_report, accuracy_sc
     precision_score, recall_score, roc_curve, auc, ConfusionMatrixDisplay
 from sklearn.model_selection import learning_curve
 from sklearn.tree import plot_tree
+from matplotlib import cm
 
 from const import project_dir_path
 
@@ -27,8 +28,18 @@ class ClassificationStatistics:
 
     def get_confusion_matrix(self):
         cm = confusion_matrix(self._y_actual, self._y_predicted)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[0.0, 1.0])
-        disp.plot()
+        plt.imshow(cm, interpolation='nearest', cmap='GnBu')
+        plt.title('Confusion Matrix for ' + self._model_name)
+        plt.colorbar()
+        plt.xticks([0, 1], ['Away Team', 'Home Team'])
+        plt.yticks([0, 1], ['Away Team', 'Home Team'])
+        plt.xlabel('Predicted Winner')
+        plt.ylabel('Actual Winner')
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                plt.text(j, i, cm[i, j], horizontalalignment="center",
+                         color="white" if cm[i, j] > cm.max() / 2 else "black")
+        plt.tight_layout()
         if not os.path.exists(project_dir_path + '/results/' + self._model_name):
             os.mkdir(project_dir_path + '/results/' + self._model_name)
         plt.savefig(project_dir_path + '/results/' + self._model_name + '/confusion_matrix.png')
