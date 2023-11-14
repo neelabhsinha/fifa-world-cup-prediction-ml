@@ -2,10 +2,20 @@
 # coding: utf-8
 
 
+from feature.feature_generator import FeatureGenerator
+from model.decision_tree import DecisionTree
+from model.gradient_boost import GradientBoost
+from model.logistic_regression_class import LogisticRegressionClass
+from model.random_forest import RandomForest
+from model.svm import SVM
 import numpy as np
 import datetime
-from const import WCGroups
-
+from const import WCGroups, individual_window_size, head_to_head_window_size
+import networkx as nx
+import pydot
+from networkx.drawing.nx_pydot import graphviz_layout
+import pandas as pd
+from matplotlib import pyplot as plt
 
 # ## Tournament Schedule
 # 
@@ -44,16 +54,31 @@ from const import WCGroups
 #     SF_W1 vs SF_W2<br>
 # 
 
-class TournamentSimulator:
+class TournamentSimulator():
 
-    def __init__(self, tournamentStartDate) -> None:
-        self.tournamentStartDate = tournamentStartDate
-        self.groups = WCGroups
+    def __init__(self, tournamentStartDate, model_name) -> None:
+        self.tournamentStartDate= tournamentStartDate
+        self.groups= WCGroups
+        self.featureGenerator= FeatureGenerator(individual_window_size, head_to_head_window_size)
+        self.model_name= model_name
+        if model_name == 'random_forest':
+            self.model = RandomForest()
+        elif model_name == 'gradient_boost':
+            self.model = GradientBoost()
+        elif model_name == 'support_vector_machine':
+            self.model = SVM()
+        elif model_name == 'decision_tree':
+            self.model = DecisionTree()
+        elif model_name == 'logistic_regression':
+            self.model = LogisticRegressionClass()
+        self.model.load_model()
 
-    def predictWinner(self, team1, team2, dateOfMatch):
-        winner = team1 if np.random.random(1) > 0.5 else team2
+    def predictWinner(self, team1, team2, dateOfMatch, matchType):
+        features= self.featureGenerator.get_features(team1, team2, dateOfMatch, matchType)
+        win_prob= self.model.predict_proba(features)[0][1]
+        winner= team1 if win_prob>0.5 else team2
         print(f"{team1} v/s {team2} on {dateOfMatch}- {winner} won")
-        return winner
+        return winner, win_prob
 
     def playGroupStage(self, start_date):
         num_grps = 8
@@ -66,7 +91,7 @@ class TournamentSimulator:
             for i in range(0, len(teams)):
                 for j in range(i + 1, len(teams)):
                     dateOfMatch = start_date + datetime.timedelta(days=i * j)
-                    winner = self.predictWinner(teams[i], teams[j], dateOfMatch)
+                    winner, _= self.predictWinner(teams[i], teams[j], dateOfMatch, 'group_stage')
                     winners.append(winner)
             u, count = np.unique(winners, return_counts=True)
             count_sort_ind = np.argsort(-count)
@@ -74,7 +99,7 @@ class TournamentSimulator:
 
         return np.array(grp_winners)
 
-    def play(self, previousWinners, stage='round_of_16', start_date=datetime.date(2023, 1, 10)):
+    def play(self, previousWinners, stage='round_of_16', start_date=datetime.date(2023, 1, 10), labels=[], odds=[]):
         winners = []
         i = 0
         print(f"\nStage: {stage}")
@@ -84,14 +109,16 @@ class TournamentSimulator:
             else:
                 opp = i + 1
             dateOfMatch = start_date + datetime.timedelta(days=i)
-            winner = self.predictWinner(previousWinners[i], previousWinners[opp], dateOfMatch)
+            winner, win_prob = self.predictWinner(previousWinners[i], previousWinners[opp], dateOfMatch, stage)
             winners.append(winner)
+            labels.append(f"{previousWinners[i]}({np.round(win_prob,2)}) vs. {previousWinners[opp]}({np.round(1-win_prob,2)})")
+            odds.append([win_prob, 1-win_prob])
             if stage == 'round_of_16':
                 i += 1 if i % 2 == 0 else 3
             else:
                 i += 2
         print(f'\n{stage} winners: {winners}')
-        return winners, dateOfMatch
+        return winners, dateOfMatch, labels, odds
 
     def playKnockOuts(self):
         groupStage = self.playGroupStage(start_date=self.tournamentStartDate)
@@ -99,6 +126,49 @@ class TournamentSimulator:
         print(groupStage)
         stages = ['round_of_16', 'quarter_final', 'semi_final', 'final']
         last_date = self.tournamentStartDate + datetime.timedelta(days=55)
+        labels= list()
+        odds= list()
         for stage in stages:
-            winners, last_date = self.play(winners, stage=stage, start_date=last_date + datetime.timedelta(days=3))
-        return winners
+            winners, last_date, labels, odds = self.play(winners, stage=stage, start_date=last_date + datetime.timedelta(days=3), labels=labels, odds=odds)
+        return winners, labels, odds
+
+    def visualizeKnockOuts(self):
+        winner, labels, odds= self.playKnockOuts()
+        node_sizes = pd.DataFrame(list(reversed(odds)))
+        scale_factor = 0.3 # for visualization
+        G = nx.balanced_tree(2, 3)
+        pos = graphviz_layout(G, prog='twopi')
+        centre = pd.DataFrame(pos).mean(axis=1).mean()
+
+        plt.figure(figsize=(15, 15))
+        ax = plt.subplot(1,1,1)
+        # add circles 
+        circle_positions = [(235, 'black'), (180, 'blue'), (120, 'red'), (60, 'yellow')]
+        [ax.add_artist(plt.Circle((centre, centre), 
+                                cp, color='grey', 
+                                alpha=0.2)) for cp, c in circle_positions]
+
+        # draw first the graph
+        nx.draw(G, pos, 
+                node_color=node_sizes.diff(axis=1)[1].abs().pow(scale_factor), 
+                # node_size=node_sizes.diff(axis=1)[1].abs().pow(scale_factor)*2000, 
+                alpha=1, 
+                cmap='Reds',
+                edge_color='black',
+                width=10,
+                with_labels=False)
+
+        # draw the custom node labels
+        shifted_pos = {k:[(v[0]-centre)*0.9+centre,(v[1]-centre)*0.9+centre] for k,v in pos.items()}
+        nx.draw_networkx_labels(G, 
+                                pos=shifted_pos, 
+                                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="black", lw=.5, alpha=1), font_size=8,
+                                labels=dict(zip(reversed(range(len(labels))), labels)))
+
+        texts = ((10, 'Best 16', 'black'), (70, 'Quarter-\nfinal', 'blue'), (130, 'Semifinal', 'red'), (190, 'Final', 'yellow'))
+        [plt.text(p, centre+20, t, 
+                fontsize=12, color='grey', 
+                va='center', ha='center') for p,t,c in texts]
+        plt.axis('equal')
+        plt.title(f'Single-elimination phase predictions with fair odds using {self.model_name}\nWinner= {winner[0]}', fontsize=15)
+        plt.show()

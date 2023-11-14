@@ -30,9 +30,10 @@ if __name__ == '__main__':
     elif args.task == 'preprocess':
         generate_features()
     elif args.simulate_tournament:
-        tournamentSimulator = TournamentSimulator(datetime.date(2022, 11, 7))
-        winner = tournamentSimulator.playKnockOuts()
-        print(winner[0])
+        tournamentSimulator = TournamentSimulator(datetime.date(2022, 11, 7), 'logistic_regression')
+        # winner = tournamentSimulator.playKnockOuts()
+        # print(winner[0])
+        tournamentSimulator.visualizeKnockOuts()
 
     elif args.task == 'generate_artificial_data':
         generate_artificial_matches()
