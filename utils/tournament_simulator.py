@@ -133,6 +133,7 @@ class TournamentSimulator():
         return winners, labels, odds
 
     def visualizeKnockOuts(self):
+        model_name= ' '.join(model.capitalize() for model in self.model_name.split('_'))
         winner, labels, odds= self.playKnockOuts()
         node_sizes = pd.DataFrame(list(reversed(odds)))
         scale_factor = 0.3 # for visualization
@@ -170,5 +171,5 @@ class TournamentSimulator():
                 fontsize=12, color='grey', 
                 va='center', ha='center') for p,t,c in texts]
         plt.axis('equal')
-        plt.title(f'Single-elimination phase predictions with fair odds using {self.model_name}\nWinner= {winner[0]}', fontsize=15)
+        plt.title(f'Single-elimination phase predictions with fair odds using {model_name}\nWinner= {winner[0]}', fontsize=15)
         plt.show()
