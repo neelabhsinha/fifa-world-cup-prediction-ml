@@ -14,8 +14,8 @@ import numpy as np
 
 class ClassificationStatistics:
 
-    def __init__(self, model, model_name, X_train, y_train, X_test, y_actual, y_predicted, y_predicted_proba,
-                 averaging='weighted'):
+    def __init__(self, model, model_name, X_train, y_train, X_test, y_actual, y_predicted, y_predicted_proba, do_pca,
+                 select_features, averaging='weighted'):
         self._X_test = X_test
         self._y_actual = y_actual
         self._y_predicted = y_predicted
@@ -24,7 +24,8 @@ class ClassificationStatistics:
         self._model = model
         self._X_train = X_train
         self._y_train = y_train
-        self._model_name = ' '.join(word.capitalize() for word in model_name.split('_'))
+        self._model_name = (' '.join(word.capitalize() for word in model_name.split('_')) +
+                            (' with PCA' if do_pca else '') + (' with feature selection' if select_features else ''))
 
     def get_confusion_matrix(self):
         cm = confusion_matrix(self._y_actual, self._y_predicted)

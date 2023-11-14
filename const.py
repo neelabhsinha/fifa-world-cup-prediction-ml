@@ -24,7 +24,7 @@ models = ['random_forest', 'logistic_regression', 'gradient_boost', 'support_vec
 individual_window_size = 15
 head_to_head_window_size = 15
 last_n_data = 44000
-pca_n_components = 5
+pca_n_components = 15
 
 # ----Hyperparameter Search Space for Random Forest---- #
 random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, stop=25, num=2)],

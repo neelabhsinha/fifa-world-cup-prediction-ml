@@ -1,0 +1,19 @@
+Results for Model:  Decision Tree with PCA
+Confusion Matrix: 
+ [[599 304]
+ [240 634]]
+Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.71      0.66      0.69       903
+         1.0       0.68      0.73      0.70       874
+
+    accuracy                           0.69      1777
+   macro avg       0.69      0.69      0.69      1777
+weighted avg       0.70      0.69      0.69      1777
+
+Accuracy Score:  0.6938660664040518
+ROC AUC Score:  0.7578913157514615
+F1 Score:  0.6936488197250503
+Precision Score:  0.695236069400776
+Recall Score:  0.6938660664040518
