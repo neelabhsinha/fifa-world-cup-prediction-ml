@@ -121,6 +121,26 @@ class FeatureGenerator:
         std_goals_scored = np.std(goals_scored)
         std_goals_conceded = np.std(goals_conceded)
         return mean_goals_scored, mean_goals_conceded, std_goals_scored, std_goals_conceded
+    
+
+    def _get_individual_statistics_ranks(self, team, date_of_new_match, match_type):
+        matches_before_date = self._match_results_df[self._match_results_df['date'] < pd.to_datetime(date_of_new_match)]
+        team_a_matches = (matches_before_date[(
+            ((matches_before_date['home_team'] == team) | (matches_before_date['away_team'] == team))
+            # & (matches_before_date['tournament'] == match_type)
+        )].tail(self._individual_window_size))
+        if team_a_matches.empty:
+            return 0, 0, 0, 0, 0
+        goals_scored = np.concatenate((team_a_matches[team_a_matches['home_team'] == team]['home_score'].to_numpy(),
+                                       team_a_matches[team_a_matches['away_team'] == team]['away_score'].to_numpy()))
+        goals_conceded = np.concatenate((team_a_matches[team_a_matches['home_team'] == team]['away_score'].to_numpy(),
+                                         team_a_matches[team_a_matches['away_team'] == team]['home_score'].to_numpy()))
+        mean_goals_scored = np.mean(goals_scored)
+        mean_goals_conceded = np.mean(goals_conceded)
+        std_goals_scored = np.std(goals_scored)
+        std_goals_conceded = np.std(goals_conceded)
+        rank, _= self._get_closest_ranking_for_team(team, date_of_new_match)
+        return mean_goals_scored, mean_goals_conceded, std_goals_scored, std_goals_conceded, rank
 
     def _get_average_opposition_rank_diff(self, team, date_of_new_match, match_type):
         matches_before_date = self._match_results_df[(

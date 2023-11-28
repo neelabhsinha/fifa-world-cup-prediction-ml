@@ -4,6 +4,7 @@
 
 from feature.feature_generator import FeatureGenerator
 from model.decision_tree import DecisionTree
+from model.gmm import GaussianMixtureModel
 from model.gradient_boost import GradientBoost
 from model.logistic_regression_class import LogisticRegressionClass
 from model.random_forest import RandomForest
@@ -56,9 +57,8 @@ from matplotlib import pyplot as plt
 
 class TournamentSimulator():
 
-    def __init__(self, tournamentStartDate, model_name) -> None:
+    def __init__(self, tournamentStartDate, model_name, unsupervised_model_name) -> None:
         self.tournamentStartDate= tournamentStartDate
-        self.groups= WCGroups
         self.featureGenerator= FeatureGenerator(individual_window_size, head_to_head_window_size)
         self.model_name= model_name
         if model_name == 'random_forest':
@@ -71,7 +71,17 @@ class TournamentSimulator():
             self.model = DecisionTree()
         elif model_name == 'logistic_regression':
             self.model = LogisticRegressionClass()
+        if unsupervised_model_name == 'gmm':
+            self.unsupervised_model= GaussianMixtureModel()
+        self.groups= self.getGroups()
         self.model.load_model()
+
+    def getGroups(self):
+        all_countries= [element for sublist in WCGroups for element in sublist]
+        features= [self.featureGenerator._get_individual_statistics(country, datetime.date(2023, 11, 1), None) for country in all_countries]
+        clusters= self.unsupervised_model.get_clusters(features, all_countries)
+        groups=np.array([ clusters[:,i] for i in range(8)])
+        return groups
 
     def predictWinner(self, team1, team2, dateOfMatch, matchType):
         features= self.featureGenerator.get_features(team1, team2, dateOfMatch, matchType)
