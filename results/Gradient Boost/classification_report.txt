@@ -1,19 +1,19 @@
 Results for Model:  Gradient Boost
 Confusion Matrix: 
- [[584 319]
- [189 685]]
+ [[585 318]
+ [188 686]]
 Classification Report: 
                precision    recall  f1-score   support
 
          0.0       0.76      0.65      0.70       903
          1.0       0.68      0.78      0.73       874
 
-    accuracy                           0.71      1777
+    accuracy                           0.72      1777
    macro avg       0.72      0.72      0.71      1777
-weighted avg       0.72      0.71      0.71      1777
+weighted avg       0.72      0.72      0.71      1777
 
-Accuracy Score:  0.7141249296567248
-ROC AUC Score:  0.7913318432582974
-F1 Score:  0.7129323939037127
-Precision Score:  0.719482008223178
-Recall Score:  0.7141249296567248
+Accuracy Score:  0.7152504220596511
+ROC AUC Score:  0.7961796554074771
+F1 Score:  0.7140625813292885
+Precision Score:  0.7206292754523231
+Recall Score:  0.7152504220596511

@@ -1,0 +1,19 @@
+Results for Model:  Adaptive Boost Using Decision Tree
+Confusion Matrix: 
+ [[617 286]
+ [223 651]]
+Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.73      0.68      0.71       903
+         1.0       0.69      0.74      0.72       874
+
+    accuracy                           0.71      1777
+   macro avg       0.71      0.71      0.71      1777
+weighted avg       0.71      0.71      0.71      1777
+
+Accuracy Score:  0.7135621834552617
+ROC AUC Score:  0.7933604233029489
+F1 Score:  0.7133678113298463
+Precision Score:  0.7149715563926348
+Recall Score:  0.7135621834552617

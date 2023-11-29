@@ -1,19 +1,19 @@
 Results for Model:  Support Vector Machine
 Confusion Matrix: 
- [[642 261]
- [216 658]]
+ [[638 265]
+ [208 666]]
 Classification Report: 
                precision    recall  f1-score   support
 
          0.0       0.75      0.71      0.73       903
-         1.0       0.72      0.75      0.73       874
+         1.0       0.72      0.76      0.74       874
 
     accuracy                           0.73      1777
    macro avg       0.73      0.73      0.73      1777
-weighted avg       0.73      0.73      0.73      1777
+weighted avg       0.74      0.73      0.73      1777
 
-Accuracy Score:  0.7315700619020822
-ROC AUC Score:  0.8115612590627225
-F1 Score:  0.7315088517015736
-Precision Score:  0.7323869018212714
-Recall Score:  0.7315700619020822
+Accuracy Score:  0.7338210467079347
+ROC AUC Score:  0.8072266105100974
+F1 Score:  0.7336864793938213
+Precision Score:  0.7350648876751578
+Recall Score:  0.7338210467079347

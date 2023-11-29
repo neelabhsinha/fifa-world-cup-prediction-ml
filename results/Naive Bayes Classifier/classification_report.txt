@@ -1,0 +1,19 @@
+Results for Model:  Naive Bayes Classifier
+Confusion Matrix: 
+ [[670 233]
+ [255 619]]
+Classification Report: 
+               precision    recall  f1-score   support
+
+         0.0       0.72      0.74      0.73       903
+         1.0       0.73      0.71      0.72       874
+
+    accuracy                           0.73      1777
+   macro avg       0.73      0.73      0.73      1777
+weighted avg       0.73      0.73      0.73      1777
+
+Accuracy Score:  0.7253798536859877
+ROC AUC Score:  0.8032277356687979
+F1 Score:  0.725282195586486
+Precision Score:  0.7254071091389884
+Recall Score:  0.7253798536859877

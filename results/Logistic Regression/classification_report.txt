@@ -1,19 +1,19 @@
 Results for Model:  Logistic Regression
 Confusion Matrix: 
- [[633 270]
- [207 667]]
+ [[643 260]
+ [211 663]]
 Classification Report: 
                precision    recall  f1-score   support
 
-         0.0       0.75      0.70      0.73       903
-         1.0       0.71      0.76      0.74       874
+         0.0       0.75      0.71      0.73       903
+         1.0       0.72      0.76      0.74       874
 
     accuracy                           0.73      1777
-   macro avg       0.73      0.73      0.73      1777
-weighted avg       0.73      0.73      0.73      1777
+   macro avg       0.74      0.74      0.73      1777
+weighted avg       0.74      0.73      0.73      1777
 
-Accuracy Score:  0.7315700619020822
-ROC AUC Score:  0.8103588090549935
-F1 Score:  0.731387909635239
-Precision Score:  0.7330493426920168
-Recall Score:  0.7315700619020822
+Accuracy Score:  0.734946539110861
+ROC AUC Score:  0.813300947008573
+F1 Score:  0.7348642694482217
+Precision Score:  0.73590110271489
+Recall Score:  0.734946539110861

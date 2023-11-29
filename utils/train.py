@@ -1,5 +1,11 @@
+from sklearn.preprocessing import StandardScaler
+
+from model.adaboost import AdaptiveBoostingClassifier
 from model.decision_tree import DecisionTree
+from model.ensemble_classifier import EnsembleClassifier
 from model.gradient_boost import GradientBoost
+from model.knn import KNearestNeighbours
+from model.naive_bayes import NaiveBayesClassifier
 from model.random_forest import RandomForest
 from model.pca import PCATransform
 from const import project_dir_path, data_dir_path, individual_window_size, head_to_head_window_size, last_n_data, \
@@ -13,6 +19,7 @@ from feature.feature_selector import FeatureSelector
 
 import pandas as pd
 import os.path as osp
+import numpy as np
 
 from utils.preprocess import generate_features, generate_artificial_matches
 
@@ -31,6 +38,14 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
         model = DecisionTree()
     elif model_name == 'logistic_regression':
         model = LogisticRegressionClass()
+    elif model_name == 'k_nearest_neighbours':
+        model = KNearestNeighbours()
+    elif model_name == 'naive_bayes_classifier':
+        model = NaiveBayesClassifier()
+    elif 'adaptive_boost_' in model_name:
+        model = AdaptiveBoostingClassifier(model_name=model_name)
+    elif model_name == 'ensemble_classifier':
+        model = EnsembleClassifier()
     if select_features:
         print('Selecting features')
         feature_selector = FeatureSelector(model, X, y)
@@ -41,8 +56,13 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
         pca.fit(X)
         pca_X = pca.transform(X)
     X = X[selected_features] if select_features else X
+    scalar = StandardScaler()
+    scalar.fit(X)
+    X = scalar.transform(X)
     x_train, x_test, y_train, y_test = get_train_test_split(pca_X if do_pca else X, y)
-    if tune:
+    if model_name == 'ensemble_classifier':
+        print('Ensemble classifier already loads tuned individual models')
+    elif tune:
         model.tune(x_train, y_train)
     else:
         hyperparameters = load_model(model_name)
@@ -50,28 +70,34 @@ def train(model_name, do_pca=False, tune=False, select_features=True, semi_super
             model.initialize_model_hyperparameters(**hyperparameters)
         else:
             model.tune(x_train, y_train)
-    train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test)
+    train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test,do_pca, select_features)
     if semi_supervised:
         model_name = model_name + '_semi_supervised'
         model = SemiSupervisedClassifier(base_model=model, model_name=model_name, threshold=0.75)
         artificial_X, artificial_y = load_data(artificial=True)
-        x_train = pd.concat([x_train, artificial_X], ignore_index=True)
+        scalar = StandardScaler()
+        scalar.fit(artificial_X)
+        artificial_X = scalar.transform(artificial_X)
+        x_train = np.concatenate((x_train, artificial_X))
         artificial_y.loc[:] = -1
         y_train = pd.concat([y_train, artificial_y], ignore_index=True)
-        train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi_supervised=True)
+        train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test,do_pca, select_features
+                           , semi_supervised=True)
 
 
-def train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test, semi_supervised=False):
-    print('Training model: ' + model_name)
-    model.fit(x_train, y_train)
-    print('Model trained')
+def train_and_evaluate(model_name, model, x_train, y_train, x_test, y_test,do_pca, select_features,
+                       semi_supervised=False):
+    if model_name != 'ensemble_classifier':
+        print('Training model: ' + model_name)
+        model.fit(x_train, y_train)
+        print('Model trained')
     print('Evaluating Model')
     y_hat_test = model.predict(x_test)
     y_hat_test_proba = model.predict_proba(x_test)
     if semi_supervised:
         y_train = model.get_self_training_model().transduction_
     evaluator = ClassificationStatistics(model, model_name, x_train, y_train, x_test, y_test, y_hat_test,
-                                         y_hat_test_proba)
+                                         y_hat_test_proba, do_pca, select_features)
     model.save_model()
     evaluator.evaluate_model(extract_learning_curve=not semi_supervised)
 

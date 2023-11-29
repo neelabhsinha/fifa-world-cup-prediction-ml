@@ -18,7 +18,9 @@ features_keys = [
 
 label_keys = ['home_team_win', 'draw', 'away_team_win']
 
-models = ['random_forest', 'logistic_regression', 'gradient_boost', 'support_vector_machine', 'decision_tree']
+models = ['random_forest', 'logistic_regression', 'gradient_boost', 'support_vector_machine', 'decision_tree',
+          'k_nearest_neighbours', 'naive_bayes_classifier', 'ensemble_classifier', 'adaptive_boost_using_decision_tree',
+          'adaptive_boost_using_logistic_regression']
 
 # ----Feature Selection Hyperparameters---- #
 individual_window_size = 15
@@ -37,9 +39,9 @@ random_forest_params = {'n_estimators': [int(x) for x in np.linspace(start=1, st
 
 # ----Hyperparameter Search Space for Logistic Regression ---- #
 logistic_regression_params = {
-    'solver' : ['newton-cg','lbfgs','liblinear','sag','saga','newton-cholesky'],
-    'penalty' : ['l2'],
-    'C' : [100, 10, 1.0, 0.1, 0.01],
+    'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga', 'newton-cholesky'],
+    'penalty': ['l2'],
+    'C': [100, 10, 1.0, 0.1, 0.01],
 }
 
 gradient_boost_params = {
@@ -65,6 +67,23 @@ decision_tree_params = {
     'min_samples_split': range(1, 30),
     'min_samples_leaf': range(1, 30),
     'criterion': ['gini', 'entropy']
+}
+
+# ----Hyperparameter Search Space for KNN ---- #
+knn_params = {
+    'n_neighbors': range(15, 30),
+    'weights': ['uniform', 'distance'],
+    'metric': ['euclidean', 'manhattan', 'minkowski'],
+    'p': range(1, 2)
+}
+
+naive_bayes_params = {
+    'var_smoothing': np.logspace(0, -9, num=100)
+}
+
+ada_boost_base_params = {
+    'n_estimators': [int(x) for x in np.linspace(1, 25, 2)],
+    'learning_rate': [0.00001, 0.0001, 0.001, 0.01, 0.1]
 }
 
 n_iters = 200

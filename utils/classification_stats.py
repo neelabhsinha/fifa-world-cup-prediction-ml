@@ -80,7 +80,7 @@ class ClassificationStatistics:
             print('F1 Score: ', self.get_f1_score(), file=f)
             print('Precision Score: ', self.get_precision_score(), file=f)
             print('Recall Score: ', self.get_recall_score(), file=f)
-        if extract_learning_curve:
+        if self._model_name != 'Ensemble Classifier' and extract_learning_curve:
             self.save_learning_curve()
         self.save_decision_graph_for_decision_tree()
 
