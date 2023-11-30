@@ -6,6 +6,7 @@ from feature.feature_generator import FeatureGenerator
 from model.decision_tree import DecisionTree
 from model.gmm import GaussianMixtureModel
 from model.gradient_boost import GradientBoost
+from model.kmeans import Kmeans
 from model.logistic_regression_class import LogisticRegressionClass
 from model.random_forest import RandomForest
 from model.svm import SVM
@@ -73,6 +74,8 @@ class TournamentSimulator():
             self.model = LogisticRegressionClass()
         if unsupervised_model_name == 'gmm':
             self.unsupervised_model= GaussianMixtureModel()
+        elif unsupervised_model_name == 'kmeans':
+            self.unsupervised_model= Kmeans()
         self.groups= self.getGroups()
         self.model.load_model()
 
