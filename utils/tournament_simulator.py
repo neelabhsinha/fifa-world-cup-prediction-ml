@@ -81,7 +81,7 @@ class TournamentSimulator():
 
     def getGroups(self):
         all_countries= [element for sublist in WCGroups for element in sublist]
-        features= [self.featureGenerator._get_individual_statistics(country, datetime.date(2023, 11, 1), None) for country in all_countries]
+        features= [self.featureGenerator._get_individual_statistics_ranks(country, datetime.date(2023, 11, 1), None) for country in all_countries]
         clusters= self.unsupervised_model.get_clusters(features, all_countries)
         groups=np.array([ clusters[:,i] for i in range(8)])
         return groups
