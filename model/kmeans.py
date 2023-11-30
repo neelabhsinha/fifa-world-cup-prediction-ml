@@ -14,7 +14,8 @@ class Kmeans:
         self._model.fit(features)
 
         sorted_cluster = np.argsort(self._model.cluster_centers_[:, -1]) #sort clusters according to rank
-
+        team_cluster_index = np.empty(0,dtype=int)
+        
         for cluster in sorted_cluster:
             team_index = np.ravel(np.argwhere(self._model.labels_==cluster))
             random_team_index = np.random.permutation(team_index)
