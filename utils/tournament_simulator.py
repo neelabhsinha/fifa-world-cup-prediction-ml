@@ -6,6 +6,7 @@ from feature.feature_generator import FeatureGenerator
 from model.decision_tree import DecisionTree
 from model.gmm import GaussianMixtureModel
 from model.gradient_boost import GradientBoost
+from model.kmeans import Kmeans
 from model.logistic_regression_class import LogisticRegressionClass
 from model.random_forest import RandomForest
 from model.svm import SVM
@@ -73,12 +74,14 @@ class TournamentSimulator():
             self.model = LogisticRegressionClass()
         if unsupervised_model_name == 'gmm':
             self.unsupervised_model= GaussianMixtureModel()
+        elif unsupervised_model_name == 'kmeans':
+            self.unsupervised_model= Kmeans()
         self.groups= self.getGroups()
         self.model.load_model()
 
     def getGroups(self):
         all_countries= [element for sublist in WCGroups for element in sublist]
-        features= [self.featureGenerator._get_individual_statistics(country, datetime.date(2023, 11, 1), None) for country in all_countries]
+        features= [self.featureGenerator._get_individual_statistics_ranks(country, datetime.date(2023, 11, 1), None) for country in all_countries]
         clusters= self.unsupervised_model.get_clusters(features, all_countries)
         groups=np.array([ clusters[:,i] for i in range(8)])
         return groups
