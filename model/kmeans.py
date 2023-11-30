@@ -13,10 +13,10 @@ class Kmeans:
     def get_clusters(self, features, all_countries):
         self._model.fit(features)
 
-        sorted_cluster = np.argsort(self.model.cluster_centers_[:, -1]) #sort clusters according to rank
+        sorted_cluster = np.argsort(self._model.cluster_centers_[:, -1]) #sort clusters according to rank
 
         for cluster in sorted_cluster:
-            team_index = np.ravel(np.argwhere(self.model.labels_==cluster))
+            team_index = np.ravel(np.argwhere(self._model.labels_==cluster))
             random_team_index = np.random.permutation(team_index)
             team_cluster_index = np.concatenate((team_cluster_index, random_team_index), axis=0)
 
