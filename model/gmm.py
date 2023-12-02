@@ -2,6 +2,7 @@ from sklearn.mixture import GaussianMixture
 import numpy as np
 from joblib import dump, load
 from const import project_dir_path
+from sklearn.metrics import silhouette_score
 
 
 class GaussianMixtureModel:
@@ -42,7 +43,11 @@ class GaussianMixtureModel:
                     map[idx]=1
                 j+=1
             clusters.append(np.array(all_countries)[in_cluster])
-
+        print(f"Silhouette Score- {self.silhouette_average(features)}")
         return np.array(clusters)
 
+    def silhouette_average(self, X):
+        labels = self.predict(X)
+        silhouette_avg = silhouette_score(X, labels)
+        return silhouette_avg
 

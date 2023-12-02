@@ -3,11 +3,15 @@
 
 
 from feature.feature_generator import FeatureGenerator
+from model.adaboost import AdaptiveBoostingClassifier
 from model.decision_tree import DecisionTree
+from model.ensemble_classifier import EnsembleClassifier
 from model.gmm import GaussianMixtureModel
 from model.gradient_boost import GradientBoost
+from model.knn import KNearestNeighbours
 from model.kmeans import Kmeans
 from model.logistic_regression_class import LogisticRegressionClass
+from model.naive_bayes import NaiveBayesClassifier
 from model.random_forest import RandomForest
 from model.svm import SVM
 import numpy as np
@@ -72,6 +76,14 @@ class TournamentSimulator():
             self.model = DecisionTree()
         elif model_name == 'logistic_regression':
             self.model = LogisticRegressionClass()
+        elif model_name == 'k_nearest_neighbours':
+            self.model = KNearestNeighbours()
+        elif model_name == 'naive_bayes_classifier':
+            self.model = NaiveBayesClassifier()
+        elif 'adaptive_boost_' in model_name:
+            self.model = AdaptiveBoostingClassifier(model_name=model_name)
+        elif model_name == 'ensemble_classifier':
+            self.model = EnsembleClassifier()
         if unsupervised_model_name == 'gmm':
             self.unsupervised_model= GaussianMixtureModel()
         elif unsupervised_model_name == 'kmeans':
