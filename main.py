@@ -30,7 +30,7 @@ if __name__ == '__main__':
     elif args.task == 'preprocess':
         generate_features()
     elif args.simulate_tournament:
-        tournamentSimulator = TournamentSimulator(datetime.date(2022, 11, 7), 'logistic_regression', unsupervised_model_name='gmm')
+        tournamentSimulator = TournamentSimulator(datetime.date(2022, 11, 7), 'adaptive_boost_using_logistic_regression', unsupervised_model_name='gmm')
         # tournamentSimulator.getGroups()
         # winner = tournamentSimulator.playKnockOuts()
         # print(winner[0])
