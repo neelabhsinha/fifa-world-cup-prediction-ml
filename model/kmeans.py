@@ -1,5 +1,6 @@
 from k_means_constrained import KMeansConstrained
 import numpy as np
+from sklearn.metrics import silhouette_score
 
 class Kmeans:
     def __init__(self, n_components=4, model_name= 'kmeans'):
@@ -22,4 +23,10 @@ class Kmeans:
             team_cluster_index = np.concatenate((team_cluster_index, random_team_index), axis=0)
 
         clusters = np.array(all_countries)[team_cluster_index]
+        print(f"Silhouette Score- {self.silhouette_average(features)}")
         return clusters.reshape(4,8)
+
+    def silhouette_average(self, X):
+        labels = self._model.fit_predict(X)
+        silhouette_avg = silhouette_score(X, labels)
+        return silhouette_avg
