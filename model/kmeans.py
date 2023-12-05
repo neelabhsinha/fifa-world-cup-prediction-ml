@@ -2,7 +2,7 @@ from k_means_constrained import KMeansConstrained
 import numpy as np
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import davies_bouldin_score
-from model.betaCV import betacv
+from utils.betaCV import betacv
 
 class Kmeans:
     def __init__(self, n_components=4, model_name= 'kmeans'):
