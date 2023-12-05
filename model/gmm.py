@@ -3,7 +3,8 @@ import numpy as np
 from joblib import dump, load
 from const import project_dir_path
 from sklearn.metrics import silhouette_score
-
+from sklearn.metrics import davies_bouldin_score
+from model.betaCV import betacv
 
 class GaussianMixtureModel:
 
@@ -44,10 +45,23 @@ class GaussianMixtureModel:
                 j+=1
             clusters.append(np.array(all_countries)[in_cluster])
         print(f"Silhouette Score- {self.silhouette_average(features)}")
+        print(f"Davies-Bouldin Index - {self.db_index_score(features)}")
+        print(f"Beta CV measure - {self.betaCV_score(features)}")
         return np.array(clusters)
 
     def silhouette_average(self, X):
         labels = self.predict(X)
         silhouette_avg = silhouette_score(X, labels)
         return silhouette_avg
+        
+    def db_index_score(self, X):
+        labels = self.predict(X)
+        db_index = davies_bouldin_score(X, labels)
+        return db_index
+        
+    # from https://github.com/hayashikan/betacv/blob/master/betacv.py
+    def betaCV_score(self,X):
+        labels = self.predict(X)
+        return betacv(X,labels,metric='euclidean')
+        
 
