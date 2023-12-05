@@ -4,7 +4,7 @@ from joblib import dump, load
 from const import project_dir_path
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import davies_bouldin_score
-from model.betaCV import betacv
+from utils.betaCV import betacv
 
 class GaussianMixtureModel:
 
